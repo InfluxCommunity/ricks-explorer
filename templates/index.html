@@ -61,6 +61,12 @@
                 if (type == 'table' && node.children.length === 0) {
                     populate_children('/api/get-columns/' + node.original.database + "/", node);
                 }
+                if(type == 'column'){
+                    var selected_nodes = $('#treeView').jstree('get_selected', true);
+                    selected_nodes.forEach(function(node){
+                        console.log(node.original.database + "/" + node.original.table + "/" + node.text)
+                    });
+                }
             });
 
             function populate_children(end_point, node) {
@@ -85,11 +91,10 @@
                         $("#treeView").width(ui.size.width);
                     }
                 });
-
             });
-
-        };
+        };  
     </script>
+
 
 </head>
 
@@ -99,7 +104,14 @@
         <div id="treeViewWrapper" style="width: 300px; overflow: auto;">
             <div id="treeView"></div>
         </div>
-        <div id="sql-editor" style="flex-grow: 1; height: 600px; border: 1px solid black; padding: 10px;"></div>
+        <div id="editorWrapper" style="flex-grow: 1;">
+            <span>Language:</span>
+            <select id="langSelect" style="width: 25%;">
+                <option value="sql">SQL</option>
+                <option value="influxql">InfluxQL</option>
+            </select>
+            <div id="sql-editor" style="height: 600px; border: 1px solid black; padding: 10px;"></div>
+        </div>
     </div>
 
     <!-- Load the Ace editor JavaScript files -->

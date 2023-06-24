@@ -26,16 +26,26 @@ def get_columns(database, table):
     "query_type": "sql"}
     ticket_bytes = json.dumps(ticket_data)
     ticket = Ticket(ticket_bytes)
-    print(ticket_bytes)
-    flight_reader = client.do_get(ticket, options)
-    df = flight_reader.read_all().to_pandas()
-    data = df.to_dict(orient='records')
-    formatted_data = [{'text': d['column_name'], 
-                'id': f"{table}_{d['column_name']}",
-                'type': 'column',
-                'database':database} for d in data]
-    return jsonify(formatted_data)
-
+    try:
+        flight_reader = client.do_get(ticket, options)
+        df = flight_reader.read_all().to_pandas()
+        data = df.to_dict(orient='records')
+        formatted_data = [{'text': d['column_name'], 
+                    'id': f"{table}_{d['column_name']}",
+                    'type': 'column',
+                    'database':database,
+                    'table':table} for d in data]
+        return jsonify(formatted_data)
+    except:
+        return jsonify([{
+            'text':'Empty',
+            'disabled':'true',
+            'type': 'table',
+            'database':database,
+            'a_attr': {'class': 'disabled'},
+            'li_attr': {'class': 'disabled'},
+            'icon': '/static/images/table.png'
+        }])
 @app.route('/api/get-tables/<database>', methods=['GET'])
 def get_tables(database):
     ticket_data = {
@@ -83,10 +93,10 @@ def get_databases():
     data = list(reader)
     databases = [row[3] for row in data if len(row) > 3]
     return jsonify([{'text': database,
-                     'id': database,
-                     'icon': '/static/images/db.png',
-                     'opened': False,
-                     'type':'database'
+                    'id': database,
+                    'icon': '/static/images/db.png',
+                    'opened': False,
+                    'type':'database'
                      } for database in databases])
 
 def get_column_icon(type_str):
