@@ -61,14 +61,37 @@
                 if (type == 'table' && node.children.length === 0) {
                     populate_children('/api/get-columns/' + node.original.database + "/", node);
                 }
-                if(type == 'column'){
-                    var selected_nodes = $('#treeView').jstree('get_selected', true);
-                    selected_nodes.forEach(function(node){
-                        console.log(node.original.database + "/" + node.original.table + "/" + node.text)
-                    });
+                if (type == 'column') {
+                    build_query();
                 }
             });
-
+            $('#durationSelect').change(function () { build_query() });
+            $('#languageSelect').change(function () { build_query() });
+            function build_query() {
+                var language = document.getElementById("languageSelect").value;
+                var selected_nodes = $('#treeView').jstree('get_selected', true);
+                if (selected_nodes.length == 0) { return false; }
+                table = selected_nodes[0].original.table;
+                var selected_columns = selected_nodes
+                    .filter(function (node) {
+                        return node.original.type === 'column';
+                    })
+                    .map(function (node) {
+                        return node.text;
+                    })
+                    .join(', ');
+                query = "";
+                if (language == "sql") {
+                    var interval = document.getElementById("durationSelect").value;
+                    var query = `SELECT\n\t${selected_columns}\nFROM\n\t${table}\nWHERE\n\ttime > now() - interval '${interval}'`;
+                }
+                else if (language == "influxql") {
+                    interval = $("#durationSelect option:selected").text();
+                    var query = `SELECT\n\t${selected_columns}\nFROM\n\t${table}\nWHERE\n\ttime > now() - ${interval}`;
+                }
+                editor.setValue("");
+                editor.setValue(query);
+            }
             function populate_children(end_point, node) {
                 fetch(end_point + node.text)
                     .then(response => response.json())
@@ -81,7 +104,6 @@
                     })
                     .catch(error => console.error('Error:', error));
             }
-
             $(function () {
                 $("#treeViewWrapper").resizable({
                     handles: 'e',
@@ -105,11 +127,29 @@
             <div id="treeView"></div>
         </div>
         <div id="editorWrapper" style="flex-grow: 1;">
-            <span>Language:</span>
-            <select id="langSelect" style="width: 25%;">
-                <option value="sql">SQL</option>
-                <option value="influxql">InfluxQL</option>
-            </select>
+            <DIV><span>Language:</span>
+                <select id="languageSelect"">
+                    <option value="sql">SQL</option>
+                    <option value="influxql">InfluxQL</option>
+                </select>
+                <span>Time Range Start:</span>
+                <select id="durationSelect"">
+                    <option value="5 minutes">5m</option>
+                    <option value="1 hour">1h</option>
+                </select>
+            </DIV>
+            <DIV>
+                <SPAN>Aggregation:</SPAN>
+                <select id="aggregationSelect">
+                    <option value='none'>None</option>
+                    <option value="mean">Mean</option>
+                </select>
+                <SPAN>Aggregation Interval:</SPAN>
+                <select id="intervalSelect">
+                    <option value='1 minute'>1m</option>
+                    <option value="1 hour">1h</option>
+                </select>
+            </DIV>
             <div id="sql-editor" style="height: 600px; border: 1px solid black; padding: 10px;"></div>
         </div>
     </div>
