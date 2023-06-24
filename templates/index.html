@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Databases</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.15/jstree.min.js"
+        integrity="sha512-zTdDEt8tOqDRVRFKgypzg8g7FJE7A9lhnTZ6YpUlufaF/XvjIGF/zaPljDhER8XmIwePEAjBjv27TEuubED0/A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+    <style>
+        .disabled {
+            color: #aaa;
+            cursor: not-allowed;
+        }
+    </style>
+    <script>
+        window.onload = function () {
+            $('#treeView').jstree({
+                'core': {
+                    'data': function (node, cb) {
+                        if (node.id === "#") {
+                            // This is the root node, load the databases
+                            fetch('/api/get-databases')
+                                .then(response => response.json())
+                                .then(data => cb(data))
+                                .catch(error => console.error('Error:', error));
+                        }
+                    },
+                    'check_callback': true,  // This is needed to allow adding new nodes dynamically
+                }
+            }).on('select_node.jstree', function (e, data) {
+                var node = data.node;
+                var type = node.original.type;
+                if (node.a_attr && node.a_attr.class === 'disabled') {
+                    return false;
+                }
+                if (type == 'database' && node.children.length === 0) {
+
+                    populate_children('/api/get-tables/', node);
+                }
+                if (type == 'table' && node.children.length === 0) {
+                    populate_children('/api/get-columns/' + node.original.database + "/", node);
+                }
+            });
+
+            function populate_children(end_point, node) {
+                fetch(end_point + node.text)
+                    .then(response => response.json())
+                    .then(children => {
+                        // Add each table as a child node to the database node
+                        children.forEach(child => {
+                            $('#treeView').jstree().create_node(node, child, "last");
+                        });
+                        $('#treeView').jstree('open_node', node);
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+
+        };
+    </script>
+
+</head>
+
+<body>
+
+    <div id="treeView"></div>
+
+</body>
+
+</html>
