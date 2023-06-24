@@ -18,9 +18,25 @@ client = FlightClient(f"grpc+tls://{host}:443")
 def home():
     return render_template('index.html')
 
+@app.route('/api/get-tag-values/<database>/<table>/<key>', methods=['GET'])
+def get_tag_values(database, table, key):
+    ticket_data = {
+    "database": database,
+    "sql_query": f"""show tag values from {table} with key = "{key}" """,
+    "query_type": "influxql"}
+
+    df = punch_ticket(ticket_data)
+    data = df.to_dict(orient='records')
+    tag_values = [{
+        'text':d['value'],
+                'type':'tag_value',
+        'database':database,
+        'table':table,
+        'key': key}for d in data]
+    return jsonify(tag_values)
+
 @app.route('/api/get-columns/<database>/<table>', methods=['GET'])
 def get_columns(database, table):
-
     ticket_data = {
     "database": database,
     "sql_query": f"show tag keys from {table}",
@@ -130,4 +146,4 @@ def get_column_icon(type_str):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5001)
+    app.run(debug=True, port=5002)
