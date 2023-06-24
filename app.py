@@ -20,46 +20,44 @@ def home():
 
 @app.route('/api/get-columns/<database>/<table>', methods=['GET'])
 def get_columns(database, table):
-    tags = []
-    fields = []
+
     ticket_data = {
     "database": database,
     "sql_query": f"show tag keys from {table}",
     "query_type": "influxql"}
+    df = punch_ticket(ticket_data)
+
+    data = df.to_dict(orient='records')
+    tags = [{
+        'text':d['tagKey'],
+        'type':'tag_key',
+         'database':database,
+         'table':table} for d in data]
+    
+    ticket_data = {
+    "database": database,
+    "sql_query": f"show field keys from {table}",
+    "query_type": "influxql"}
+    df = punch_ticket(ticket_data)
+
+    data = df.to_dict(orient='records')
+    print(data)
+    fields = [{'text':d['fieldKey'],
+                'type':'field',
+                'database':database,
+                'table':table} for d in data]
+
+
+    data = {'tags': tags, 'fields':fields}
+    return jsonify(data)
+
+def punch_ticket(ticket_data):
     ticket_bytes = json.dumps(ticket_data)
     ticket = Ticket(ticket_bytes)
-    data = {'tags': [
-        {'text':'tag key 1',
-         'type':'tag_key',
-         'database':database,
-         'table':table}
-    ], 'fields':[
-        {'text':'field 1',
-         'type':'field',
-         'database':database,
-         'table':table
-        }]}
-    return jsonify(data)
-    # try:
-    #     flight_reader = client.do_get(ticket, options)
-    #     df = flight_reader.read_all().to_pandas()
-    #     data = df.to_dict(orient='records')
-    #     formatted_data = [{'text': d['column_name'], 
-    #                 'id': f"{table}_{d['column_name']}",
-    #                 'type': 'column',
-    #                 'database':database,
-    #                 'table':table} for d in data]
-    #     return jsonify(formatted_data)
-    # except:
-    #     return jsonify([{
-    #         'text':'Empty',
-    #         'disabled':'true',
-    #         'type': 'table',
-    #         'database':database,
-    #         'a_attr': {'class': 'disabled'},
-    #         'li_attr': {'class': 'disabled'},
-    #         'icon': '/static/images/table.png'
-    #     }])
+    flight_reader = client.do_get(ticket, options)
+    df = flight_reader.read_all().to_pandas()
+    return df
+
 @app.route('/api/get-tables/<database>', methods=['GET'])
 def get_tables(database):
     ticket_data = {
