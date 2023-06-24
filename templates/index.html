@@ -56,10 +56,10 @@
                 }
                 if (type == 'database' && node.children.length === 0) {
 
-                    populate_children('/api/get-tables/', node);
+                    populate_database('/api/get-tables/', node);
                 }
                 if (type == 'table' && node.children.length === 0) {
-                    populate_children('/api/get-columns/' + node.original.database + "/", node);
+                    populate_table('/api/get-columns/' + node.original.database + "/", node);
                 }
                 if (type == 'column') {
                     build_query();
@@ -92,7 +92,33 @@
                 editor.setValue("");
                 editor.setValue(query);
             }
-            function populate_children(end_point, node) {
+            function populate_table(end_point, node){
+                fetch(end_point + node.text)
+                    .then(response => response.json())
+                    .then(objects => {
+                        // Add each table as a child node to the database node
+                        tag_node = $('#treeView').jstree().create_node(node, {
+                            'text':'tag keys',
+                            'type':'tag_node'
+                        }, "last");
+                        console.log(objects['tags']);
+                        objects['tags'].forEach(tag =>{
+                            $('#treeView').jstree().create_node(tag_node, tag, "last");
+                        });
+                        $('#treeView').jstree('open_node', tag_node);
+
+                        field_node = $('#treeView').jstree().create_node(node, {
+                            'text':'fields',
+                            'type':'field_node'
+                        }, "last");
+                        objects['fields'].forEach(field => {
+                            $('#treeView').jstree().create_node(field_node, field, "last");
+                        });
+                        $('#treeView').jstree('open_node', field_node);
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+            function populate_database(end_point, node) {
                 fetch(end_point + node.text)
                     .then(response => response.json())
                     .then(children => {

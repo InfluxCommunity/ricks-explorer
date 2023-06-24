@@ -20,32 +20,46 @@ def home():
 
 @app.route('/api/get-columns/<database>/<table>', methods=['GET'])
 def get_columns(database, table):
+    tags = []
+    fields = []
     ticket_data = {
     "database": database,
-    "sql_query": f"show columns from {table}",
-    "query_type": "sql"}
+    "sql_query": f"show tag keys from {table}",
+    "query_type": "influxql"}
     ticket_bytes = json.dumps(ticket_data)
     ticket = Ticket(ticket_bytes)
-    try:
-        flight_reader = client.do_get(ticket, options)
-        df = flight_reader.read_all().to_pandas()
-        data = df.to_dict(orient='records')
-        formatted_data = [{'text': d['column_name'], 
-                    'id': f"{table}_{d['column_name']}",
-                    'type': 'column',
-                    'database':database,
-                    'table':table} for d in data]
-        return jsonify(formatted_data)
-    except:
-        return jsonify([{
-            'text':'Empty',
-            'disabled':'true',
-            'type': 'table',
-            'database':database,
-            'a_attr': {'class': 'disabled'},
-            'li_attr': {'class': 'disabled'},
-            'icon': '/static/images/table.png'
-        }])
+    data = {'tags': [
+        {'text':'tag key 1',
+         'type':'tag_key',
+         'database':database,
+         'table':table}
+    ], 'fields':[
+        {'text':'field 1',
+         'type':'field',
+         'database':database,
+         'table':table
+        }]}
+    return jsonify(data)
+    # try:
+    #     flight_reader = client.do_get(ticket, options)
+    #     df = flight_reader.read_all().to_pandas()
+    #     data = df.to_dict(orient='records')
+    #     formatted_data = [{'text': d['column_name'], 
+    #                 'id': f"{table}_{d['column_name']}",
+    #                 'type': 'column',
+    #                 'database':database,
+    #                 'table':table} for d in data]
+    #     return jsonify(formatted_data)
+    # except:
+    #     return jsonify([{
+    #         'text':'Empty',
+    #         'disabled':'true',
+    #         'type': 'table',
+    #         'database':database,
+    #         'a_attr': {'class': 'disabled'},
+    #         'li_attr': {'class': 'disabled'},
+    #         'icon': '/static/images/table.png'
+    #     }])
 @app.route('/api/get-tables/<database>', methods=['GET'])
 def get_tables(database):
     ticket_data = {
