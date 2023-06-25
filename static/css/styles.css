@@ -1,0 +1,32 @@
+.disabled {
+    color: #aaa;
+    cursor: not-allowed;
+}
+
+.ui-resizable-e {
+    height: 100%;
+    width: 8px;
+    right: -5px;
+    top: 0;
+    cursor: col-resize;
+    background: #ccc;
+}
+
+#flexWrapper {
+    display: flex;
+}
+
+#treeviewWrapper {
+    width: 300px;
+    overflow: auto;
+}
+
+#editorWrapper{
+    flex-grow: 1;
+}
+
+#sqlEditor {
+    height: 600px;
+    border: 1px solid black; 
+    padding: 10px"
+}

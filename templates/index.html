@@ -5,193 +5,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Databases</title>
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    <!-- External JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.15/jstree.min.js"
         integrity="sha512-zTdDEt8tOqDRVRFKgypzg8g7FJE7A9lhnTZ6YpUlufaF/XvjIGF/zaPljDhER8XmIwePEAjBjv27TEuubED0/A=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 
-    <style>
-        .disabled {
-            color: #aaa;
-            cursor: not-allowed;
-        }
-
-        .ui-resizable-e {
-            height: 100%;
-            width: 8px;
-            right: -5px;
-            top: 0;
-            cursor: col-resize;
-            background: #ccc;
-        }
-    </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/mode-sql.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/theme-monokai.js"></script>
 
+    <!-- App JS -->
+    <script type="module">
+        import { initializeTreeview } from "{{ url_for('static', filename='js/treeview.js') }}";
+        import { buildQuery } from "{{ url_for('static', filename='js/query.js') }}";
 
-    <script>
         window.onload = function () {
-            $('#treeView').jstree({
-                'core': {
-                    'data': function (node, cb) {
-                        if (node.id === "#") {
-                            // This is the root node, load the databases
-                            fetch('/api/get-databases')
-                                .then(response => response.json())
-                                .then(data => cb(data))
-                                .catch(error => console.error('Error:', error));
-                        }
-                    },
-                    'check_callback': true,  // This is needed to allow adding new nodes dynamically
-                }
-            }).on('select_node.jstree', function (e, data) {
-                var node = data.node;
-                var type = node.original.type;
-                if (node.a_attr && node.a_attr.class === 'disabled') {
-                    return false;
-                }
-                if (type == 'database' && node.children.length === 0) {
+            initializeTreeview();
+            connectQueryBuildChangeEvents();
+        };
 
-                    populate_children('/api/get-tables/', node);
-                }
-                if (type == 'table' && node.children.length === 0) {
-                    populate_table('/api/get-columns/' + node.original.database + "/", node);
-                }
-                if (type == 'tag_key') {
-                    populate_children(`api/get-tag-values/${node.original.database}/${node.original.table}/`,
-                                        node)
-                }
-            });
-            $('#durationSelect').change(function () { build_query() });
-            $('#languageSelect').change(function () { build_query() });
-            function build_query() {
-                var language = document.getElementById("languageSelect").value;
-                var selected_nodes = $('#treeView').jstree('get_selected', true);
-                if (selected_nodes.length == 0) { return false; }
-                table = selected_nodes[0].original.table;
-                var selected_columns = selected_nodes
-                    .filter(function (node) {
-                        return node.original.type === 'column';
-                    })
-                    .map(function (node) {
-                        return node.text;
-                    })
-                    .join(', ');
-                query = "";
-                if (language == "sql") {
-                    var interval = document.getElementById("durationSelect").value;
-                    var query = `SELECT\n\t${selected_columns}\nFROM\n\t${table}\nWHERE\n\ttime > now() - interval '${interval}'`;
-                }
-                else if (language == "influxql") {
-                    interval = $("#durationSelect option:selected").text();
-                    var query = `SELECT\n\t${selected_columns}\nFROM\n\t${table}\nWHERE\n\ttime > now() - ${interval}`;
-                }
-                editor.setValue("");
-                editor.setValue(query);
-            }
-            function populate_table(end_point, node){
-                fetch(end_point + node.text)
-                    .then(response => response.json())
-                    .then(objects => {
-                        // Add each table as a child node to the database node
-                        tag_node = $('#treeView').jstree().create_node(node, {
-                            'text':'tag keys',
-                            'type':'tag_node'
-                        }, "last");
-                        objects['tags'].forEach(tag =>{
-                            $('#treeView').jstree().create_node(tag_node, tag, "last");
-                        });
-                        $('#treeView').jstree('open_node', tag_node);
-
-                        field_node = $('#treeView').jstree().create_node(node, {
-                            'text':'fields',
-                            'type':'field_node'
-                        }, "last");
-                        objects['fields'].forEach(field => {
-                            $('#treeView').jstree().create_node(field_node, field, "last");
-                        });
-                        $('#treeView').jstree('open_node', field_node);
-                    })
-                    .catch(error => console.error('Error:', error));
-            }
-            function populate_children(end_point, node) {
-                fetch(end_point + node.text)
-                    .then(response => response.json())
-                    .then(children => {
-                        // Add each table as a child node to the database node
-                        children.forEach(child => {
-                            $('#treeView').jstree().create_node(node, child, "last");
-                        });
-                        $('#treeView').jstree('open_node', node);
-                    })
-                    .catch(error => console.error('Error:', error));
-            }
-            $(function () {
-                $("#treeViewWrapper").resizable({
-                    handles: 'e',
-                    maxWidth: 600,
-                    minWidth: 200,
-                    resize: function (event, ui) {
-                        $("#treeView").width(ui.size.width);
-                    }
-                });
-            });
-        };  
+        function connectQueryBuildChangeEvents() {
+            $('#durationSelect').change(function () { buildQuery(); });
+            $('#languageSelect').change(function () { buildQuery(); });
+        }
     </script>
-
-
 </head>
 
 <body>
-
-    <div style="display: flex;">
-        <div id="treeViewWrapper" style="width: 300px; overflow: auto;">
-            <div id="treeView"></div>
+    <div id="flexWrapper">
+        <div id="treeviewWrapper">
+            <div id="treeview"></div>
         </div>
-        <div id="editorWrapper" style="flex-grow: 1;">
-            <DIV><span>Language:</span>
-                <select id="languageSelect"">
+        <div id="editorWrapper">
+            <div>
+                <span>Language:</span>
+                <select id="languageSelect">
                     <option value="sql">SQL</option>
                     <option value="influxql">InfluxQL</option>
                 </select>
                 <span>Time Range Start:</span>
-                <select id="durationSelect"">
+                <select id="durationSelect">
                     <option value="5 minutes">5m</option>
                     <option value="1 hour">1h</option>
                 </select>
-            </DIV>
-            <DIV>
-                <SPAN>Aggregation:</SPAN>
+            </div>
+            <div>
+                <span>Aggregation:</span>
                 <select id="aggregationSelect">
                     <option value='none'>None</option>
                     <option value="mean">Mean</option>
                 </select>
-                <SPAN>Aggregation Interval:</SPAN>
+                <span>Aggregation Interval:</span>
                 <select id="intervalSelect">
                     <option value='1 minute'>1m</option>
                     <option value="1 hour">1h</option>
                 </select>
-            </DIV>
-            <div id="sql-editor" style="height: 600px; border: 1px solid black; padding: 10px;"></div>
+            </div>
+            <div id="sqlEditor"></div>
         </div>
     </div>
 
-    <!-- Load the Ace editor JavaScript files -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/mode-sql.js" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/theme-monokai.js" crossorigin="anonymous"></script>
-
     <script>
-        var editor = ace.edit("sql-editor");
+        var editor = ace.edit("sqlEditor");
         editor.setTheme("ace/theme/monokai");
         editor.session.setMode("ace/mode/sql");
-
     </script>
-
 </body>
 
 </html>
