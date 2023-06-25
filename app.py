@@ -24,15 +24,27 @@ def get_tag_values(database, table, key):
     "database": database,
     "sql_query": f"""show tag values from {table} with key = "{key}" """,
     "query_type": "influxql"}
-
+    print(ticket_data)
     df = punch_ticket(ticket_data)
+ 
     data = df.to_dict(orient='records')
-    tag_values = [{
-        'text':d['value'],
-                'type':'tag_value',
-        'database':database,
-        'table':table,
-        'key': key}for d in data]
+    tag_values = []
+    if len(data) == 0:
+        tag_values = [{
+            'text':'Empty',
+            'disabled':'true',
+            'type': 'tag_value',
+            'database':database,
+            'a_attr': {'class': 'disabled'},
+            'li_attr': {'class': 'disabled'}
+        }]
+    else:
+        tag_values = [{
+            'text':d['value'],
+                    'type':'tag_value',
+            'database':database,
+            'table':table,
+            'key': key}for d in data]
     return jsonify(tag_values)
 
 @app.route('/api/get-columns/<database>/<table>', methods=['GET'])
