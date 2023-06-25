@@ -16,7 +16,7 @@ export function initializeTreeview() {
         if (type == 'table' && node.children.length === 0) {
             populate_table('/api/get-columns/' + node.original.database + "/", node);
         }
-        if (type == 'tag_key') {
+        if (type == 'tag_key' && node.children.length === 0) {
             populate_children(`api/get-tag-values/${node.original.database}/${node.original.table}/`,
                 node)
         }
@@ -37,44 +37,44 @@ export function initializeTreeview() {
             .then(children => {
                 // Add each table as a child node to the database node
                 children.forEach(child => {
-                    $('#treeView').jstree().create_node(node, child, "last");
+                    $('#treeview').jstree().create_node(node, child, "last");
                 });
-                $('#treeView').jstree('open_node', node);
+                $('#treeview').jstree('open_node', node);
             })
             .catch(error => console.error('Error:', error));
     }
     $(function () {
-        $("#treeViewWrapper").resizable({
+        $("#treeviewWrapper").resizable({
             handles: 'e',
             maxWidth: 600,
             minWidth: 200,
             resize: function (event, ui) {
-                $("#treeView").width(ui.size.width);
+                $("#treeview").width(ui.size.width);
             }
         });
     });
 }
 
 function populateFields(node, objects) {
-    var field_node = $('#treeView').jstree().create_node(node, {
+    var field_node = $('#treeview').jstree().create_node(node, {
         'text': 'Fields',
         'type': 'field_node'
     }, "last");
     objects['fields'].forEach(field => {
-        $('#treeView').jstree().create_node(field_node, field, "last");
+        $('#treeview').jstree().create_node(field_node, field, "last");
     });
-    $('#treeView').jstree('open_node', field_node);
+    $('#treeview').jstree('open_node', field_node);
 }
 
 function populateTagKyes(node, objects) {
-    var tag_node = $('#treeView').jstree().create_node(node, {
+    var tag_node = $('#treeview').jstree().create_node(node, {
         'text': 'Tags',
         'type': 'tag_node'
     }, "last");
     objects['tags'].forEach(tag => {
-        $('#treeView').jstree().create_node(tag_node, tag, "last");
+        $('#treeview').jstree().create_node(tag_node, tag, "last");
     });
-    $('#treeView').jstree('open_node', tag_node);
+    $('#treeview').jstree('open_node', tag_node);
 }
 
 function fetchDatabaseList() {
