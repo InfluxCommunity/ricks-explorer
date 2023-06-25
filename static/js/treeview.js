@@ -1,3 +1,6 @@
+var currentDatabase = "";
+var currentTable = "";
+
 export function initializeTreeview() {
     $('#treeview').jstree({
         'core': {
@@ -10,6 +13,7 @@ export function initializeTreeview() {
         if (node.a_attr && node.a_attr.class === 'disabled') {
             return false;
         }
+        handleSelectionChange();
         if (type == 'database' && node.children.length === 0) {
             populate_children('/api/get-tables/', node);
         }
@@ -22,6 +26,38 @@ export function initializeTreeview() {
         }
     });
 
+    function handleSelectionChange() {
+        var selectedNodes = $('#treeview').jstree('get_selected', true);
+        var currentDatabaseChanged = false;
+        var currentTableChanged = false;
+
+        selectedNodes.forEach(node => {
+            if (node.original.database) {
+                if (node.original.database != currentDatabase
+                    && !currentDatabaseChanged) {
+                    currentDatabase = node.original.database;
+                    currentDatabaseChanged = true;
+                }
+            }
+            if (node.original.table) {
+                if (node.original.table != currentTable
+                    && !currentTableChanged) {
+                    currentTable = node.original.table;
+                    currentTableChanged = true;
+                }
+            }
+        });
+        if (currentDatabaseChanged || currentTableChanged) {
+            selectedNodes.forEach(node => {
+                console.log('checking to deselect:' + node.text)
+                if (node.original.database !== currentDatabase
+                    || node.original.table != currentTable) {
+                    console.log('deselecting: ' + node.text)
+                    $('#treeview').jstree('deselect_node', node.id);
+                }
+            });
+        }
+    }
     function populate_table(end_point, node) {
         fetch(end_point + node.text)
             .then(response => response.json())
