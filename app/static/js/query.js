@@ -1,3 +1,9 @@
+export var selectColmns = []
+export var whereColumnConditions = [{}]
+export var whereTimeConditions = [{}]
+export var database = ""
+export var table = "*"
+
 export function buildQuery() {
     console.log("let's build this query!")
     // var language = document.getElementById("languageSelect").value;

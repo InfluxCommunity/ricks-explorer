@@ -1,5 +1,6 @@
 var currentDatabase = "";
 var currentTable = "";
+import { buildQuery } from './query.js';
 
 export function initializeTreeview() {
     $('#treeview').jstree({
@@ -24,6 +25,7 @@ export function initializeTreeview() {
             populate_children(`api/get-tag-values/${node.original.database}/${node.original.table}/`,
                 node)
         }
+        buildQuery();
     });
 
     function handleSelectionChange() {
