@@ -3,6 +3,7 @@ from pyarrow.flight import FlightClient, Ticket, FlightCallOptions
 import requests
 import csv
 import json
+import os
 
 from influxdb_client_3 import InfluxDBClient3
 
@@ -119,15 +120,8 @@ def get_tables(database):
 
 @app.route('/api/get-databases', methods=['GET'])
 def get_databases():
-    url = f"https://{host}/api/v2/query"
-    body = "buckets()"
-    headers = {"Authorization":f"Token {token}", "Content-type":"application/vnd.flux"}
-    response = requests.post(url=url, data=body,headers=headers)
-    lines = response.text.splitlines()
-    reader = csv.reader(lines)
-    next(reader)
-    data = list(reader)
-    databases = [row[3] for row in data if len(row) > 3]
+    databases = os.getenv("INFLUXDB_DATABASES").split(",")
+    
     return jsonify([{'text': database,
                     'id': database,
                     'icon': '/static/images/db.png',
