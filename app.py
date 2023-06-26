@@ -24,7 +24,6 @@ def get_tag_values(database, table, key):
     "database": database,
     "sql_query": f"""show tag values from {table} with key = "{key}" """,
     "query_type": "influxql"}
-    print(ticket_data)
     df = punch_ticket(ticket_data)
  
     data = df.to_dict(orient='records')
@@ -51,8 +50,9 @@ def get_tag_values(database, table, key):
 def get_columns(database, table):
     ticket_data = {
     "database": database,
-    "sql_query": f"show tag keys from {table}",
+    "sql_query": f'show tag keys from "{table}" ',
     "query_type": "influxql"}
+
     df = punch_ticket(ticket_data)
 
     data = df.to_dict(orient='records')
@@ -64,17 +64,15 @@ def get_columns(database, table):
     
     ticket_data = {
     "database": database,
-    "sql_query": f"show field keys from {table}",
+    "sql_query": f'show field keys from "{table}" ',
     "query_type": "influxql"}
     df = punch_ticket(ticket_data)
 
     data = df.to_dict(orient='records')
-    print(data)
     fields = [{'text':d['fieldKey'],
                 'type':'field',
                 'database':database,
                 'table':table} for d in data]
-
 
     data = {'tags': tags, 'fields':fields}
     return jsonify(data)
@@ -95,14 +93,12 @@ def get_tables(database):
     
     ticket_bytes = json.dumps(ticket_data)
     ticket = Ticket(ticket_bytes)
-    print(ticket)
     # execute the query and return all the data
     try:
         flight_reader = client.do_get(ticket, options)
         df = flight_reader.read_all().to_pandas()
         
         data = df.to_dict(orient='records')
-        print(data)
         formatted_data = [{'text': d['name'], 
                            'id': d['name'],
                            'type': 'table',
