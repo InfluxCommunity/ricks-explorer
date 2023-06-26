@@ -1,17 +1,12 @@
 from flask import Flask, jsonify, render_template
 from pyarrow.flight import FlightClient, Ticket, FlightCallOptions
-import requests
-import csv
 import json
 import os
 
-from influxdb_client_3 import InfluxDBClient3
-
 app = Flask(__name__)
 
-host = 'us-east-1-2.aws.cloud2.influxdata.com'
-token = 'LaOJ8cVxJfE3xc7pAz2dstxNwl-YJv7DcH0jZVrE61UvuYSbrxX8Op7CIhAUHjvpB1G_fdsTcLoELIi3Cj4wgg=='
-org = "5d59ccc5163fc318"
+host = os.getenv('INFLUXDB_HOST')
+token = os.getenv('INFLUXDB_TOKEN')
 options = FlightCallOptions(headers=[(b"authorization",f"Bearer {token}".encode('utf-8'))])
 client = FlightClient(f"grpc+tls://{host}:443")
 
