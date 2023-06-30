@@ -22,19 +22,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/mode-sql.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/theme-monokai.js"></script>
 
+   
     <!-- App JS -->
     <script type="module">
         import { initializeTreeview } from "{{ url_for('static', filename='js/treeview.js') }}";
-        import { buildQuery } from "{{ url_for('static', filename='js/query.js') }}";
+        import { buildQuery, runQuery} from "{{ url_for('static', filename='js/query.js') }}";
 
         window.onload = function () {
             initializeTreeview();
-            connectQueryBuildChangeEvents();
+            connectUIEvents();
         };
 
-        function connectQueryBuildChangeEvents() {
+        function connectUIEvents() {
             $('#durationSelect').change(function () { buildQuery(); });
             $('#languageSelect').change(function () { buildQuery(); });
+            $('#runButton').click(function () { runQuery(); });
         }
     </script>
 </head>
@@ -70,6 +72,9 @@
                 </select>
             </div>
             <div id="sqlEditor"></div>
+            <div id="toolbar">
+                <button id="runButton">Run</button>
+            </div>
         </div>
     </div>
 

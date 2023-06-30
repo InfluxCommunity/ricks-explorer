@@ -1,4 +1,4 @@
-var currentDatabase = "";
+export var currentDatabase = "";
 var currentTable = "";
 import { buildQuery } from './query.js';
 
@@ -116,10 +116,14 @@ function populateTagKyes(node, objects) {
 function fetchDatabaseList() {
     return function (node, cb) {
         if (node.id === "#") {
-            // This is the root node, load the databases
             fetch('/api/get-databases')
                 .then(response => response.json())
-                .then(data => cb(data))
+                .then(data => {
+                    currentDatabase = data[0].id; // kludge until I can get initializing selection good
+                    cb(data);
+                }).then(() => {
+                    $('#treeview').jstree('select_node', node.id);
+                })
                 .catch(error => console.error('Error:', error));
         }
     };

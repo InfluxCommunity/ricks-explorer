@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template
+from flask import Flask, request, jsonify, render_template
 from pyarrow.flight import FlightClient, Ticket, FlightCallOptions
 import json
 import os
@@ -135,6 +135,29 @@ def get_databases():
                     'opened': False,
                     'type':'database'
                      } for database in databases])
+
+@app.route('/api/query', methods=['POST'])
+def query():
+    data = request.get_json()
+    if 'query' not in data or 'language' not in data or 'database' not in data:
+        return jsonify({'message': 'Bad Request', 'error': 'query, database, and/or language not found in the request'}), 400
+    query = data['query']
+    language = data['language']
+    database = data['database']
+
+    ticket_data = {
+    "database": database,
+    "sql_query": query,
+    "query_type": language}
+
+    ticket_bytes = json.dumps(ticket_data)
+    ticket = Ticket(ticket_bytes)
+    
+    flight_reader = client.do_get(ticket, options)
+    df = flight_reader.read_all().to_pandas()
+    json_str = df.to_json(orient='records')
+    return json_str, 200
+
 
 def get_column_icon(type_str):
     if type_str == "Utf8":

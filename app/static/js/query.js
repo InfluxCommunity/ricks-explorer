@@ -1,8 +1,29 @@
+import { currentDatabase } from './treeview.js';
+
 export var selectColmns = []
 export var whereColumnConditions = [{}]
 export var whereTimeConditions = [{}]
 export var database = ""
 export var table = "*"
+
+
+export function runQuery(){
+    var query = editor.getValue();
+    var language = document.getElementById('languageSelect').value;
+    $.ajax({
+        url: '/api/query',  // URL of your Flask route
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({query: query, language: language, database: currentDatabase}),
+        success: function(response) {
+            console.log(response);
+            // TODO: Handle the response data here
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    });   
+}
 
 export function buildQuery() {
     console.log("let's build this query!")
