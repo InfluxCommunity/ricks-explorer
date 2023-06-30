@@ -2,6 +2,8 @@ from flask import Flask, jsonify, render_template
 from pyarrow.flight import FlightClient, Ticket, FlightCallOptions
 import json
 import os
+import logging
+import sys
 
 app = Flask(__name__)
 
@@ -9,6 +11,15 @@ host = os.getenv('INFLUXDB_HOST')
 token = os.getenv('INFLUXDB_TOKEN')
 options = FlightCallOptions(headers=[(b"authorization",f"Bearer {token}".encode('utf-8'))])
 client = FlightClient(f"grpc+tls://{host}:443")
+
+logger = logging.getLogger('ricks-explorer')
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+
+logger.addHandler(handler)
 
 @app.route('/')
 def home():
@@ -18,7 +29,7 @@ def home():
 def get_tag_values(database, table, key):
     ticket_data = {
     "database": database,
-    "sql_query": f"""show tag values from {table} with key = "{key}" """,
+    "sql_query": f"""show tag values from "{table}" with key = "{key}" where time > now() - 7d""",
     "query_type": "influxql"}
     df = punch_ticket(ticket_data)
  
@@ -102,9 +113,10 @@ def get_tables(database):
                            'icon': '/static/images/table.png'} for d in data]
 
         return jsonify(formatted_data)
-    except:
+    except Exception as e:
+        logging.error(f"error getting tables: {e}")
         return jsonify([{
-            'text':'Empty',
+            'text':str(e),
             'disabled':'true',
             'type': 'table',
             'database':database,
@@ -116,7 +128,7 @@ def get_tables(database):
 @app.route('/api/get-databases', methods=['GET'])
 def get_databases():
     databases = os.getenv("INFLUXDB_DATABASES").split(",")
-    
+    logging.info(f"Found databases: {databases}")
     return jsonify([{'text': database,
                     'id': database,
                     'icon': '/static/images/db.png',

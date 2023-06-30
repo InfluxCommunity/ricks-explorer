@@ -51,10 +51,8 @@ export function initializeTreeview() {
         });
         if (currentDatabaseChanged || currentTableChanged) {
             selectedNodes.forEach(node => {
-                console.log('checking to deselect:' + node.text)
                 if (node.original.database !== currentDatabase
                     || node.original.table != currentTable) {
-                    console.log('deselecting: ' + node.text)
                     $('#treeview').jstree('deselect_node', node.id);
                 }
             });
