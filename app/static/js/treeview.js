@@ -5,6 +5,7 @@ import { buildQuery } from './query.js';
 export function setDatabase(database) {
     currentDatabase = database;
     $('#selectedDatabaseLabel').text(database);
+    $('#treeview').jstree('select_node', currentDatabase);
 }
 
 export function initializeTreeview() {
