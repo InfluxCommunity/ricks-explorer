@@ -100,7 +100,8 @@ export function initializeTreeview() {
 function populateFields(node, objects) {
     var field_node = $('#treeview').jstree().create_node(node, {
         'text': 'Fields',
-        'type': 'field_node'
+        'type': 'field_node',
+        'icon': '/static/images/fields.png'  
     }, "last");
     objects['fields'].forEach(field => {
         $('#treeview').jstree().create_node(field_node, field, "last");

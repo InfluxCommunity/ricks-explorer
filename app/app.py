@@ -81,6 +81,7 @@ def get_columns(database, table):
     fields = [{'text':d['fieldKey'],
                 'type':'field',
                 'database':database,
+                'icon': '/static/images/fields.png',
                 'table':table} for d in data]
 
     data = {'tags': tags, 'fields':fields}
@@ -164,25 +165,6 @@ def query():
     df = flight_reader.read_all().to_pandas()
     json_str = df.to_json(orient='records')
     return json_str, 200
-
-
-def get_column_icon(type_str):
-    if type_str == "Utf8":
-        return "string.png"
-    elif type_str.starts_with("Date") or type_str.starts_with("Time") or type_str.starts_with("Interval"):
-        return "time.png"
-    elif type_str.starts_with("Int") or type_str.starts_with("UInt"):
-        return "int.png"
-    elif type_str.starts_with("Float") or type_str.starts_with("Decimal"):
-        return "float.png"
-    elif type_str == "Boolean":
-        return "boolean.png"
-    elif type_str == "Binary":
-        return "binary.png"
-    else:
-        return "default.png"
-    
-
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5002)
