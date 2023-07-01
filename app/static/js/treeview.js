@@ -2,10 +2,9 @@ export var currentDatabase = "";
 var currentTable = "";
 import { buildQuery } from './query.js';
 
-function setDatabase(database) {
+export function setDatabase(database) {
     currentDatabase = database;
     $('#selectedDatabaseLabel').text(database);
-    console.log(database);
 }
 
 export function initializeTreeview() {

@@ -25,19 +25,54 @@
 
     <!-- App JS -->
     <script type="module">
-        import { initializeTreeview, currentDatabase } from "{{ url_for('static', filename='js/treeview.js') }}";
+        import { initializeTreeview, currentDatabase, setDatabase } from "{{ url_for('static', filename='js/treeview.js') }}";
         import { buildQuery, runQuery } from "{{ url_for('static', filename='js/query.js') }}";
 
+        var currentQueryIndex = -1;
         window.onload = function () {
             initializeTreeview();
             connectUIEvents();
-            
         };
 
         function connectUIEvents() {
             $('#durationSelect').change(function () { buildQuery(); });
             $('#languageSelect').change(function () { buildQuery(); });
-            $('#runButton').click(function () { runQuery(); });
+            $('#runButton').click(function () {
+                runQuery();
+                saveQueryHistory();
+                currentQueryIndex = 0;
+            });
+            $('#previousQueryButton').click(function () {
+                currentQueryIndex++;
+                loadQueryFromHistory();
+            });
+            $('#nextQueryButton').click(function () {
+                currentQueryIndex--;
+                loadQueryFromHistory();
+            });
+            $('#clearHistoryButton').click(function () {
+                localStorage.setItem('queryHistory', JSON.stringify([]));
+                currentQueryIndex = 0;
+            });
+        }
+
+        function loadQueryFromHistory() {
+            let history = JSON.parse(localStorage.getItem('queryHistory')) || [];
+            
+            if(currentQueryIndex > -1 && currentQueryIndex < history.length) {
+                const query = history[currentQueryIndex];
+                setDatabase(query.database);
+                editor.setValue(query.query);
+            }
+        }
+
+        function saveQueryHistory() {
+            const query = editor.getValue();
+            const database = currentDatabase;
+            const history = JSON.parse(localStorage.getItem('queryHistory')) || [];
+
+            history.unshift({ query, database });
+            localStorage.setItem('queryHistory', JSON.stringify(history));
         }
     </script>
 </head>
@@ -79,6 +114,12 @@
             <div id="sqlEditor"></div>
             <div id="toolbar">
                 <button id="runButton"><img src="static/images/play.png" alt="Run"></button>
+                <button id="previousQueryButton">
+                    << </button>
+                        <button id="nextQueryButton">
+                            >>
+                        </button>
+                <button id="clearHistoryButton">Clear History</button>
             </div>
             <div>
                 <canvas id="lineChart"></canvas>
