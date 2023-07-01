@@ -2,6 +2,12 @@ export var currentDatabase = "";
 var currentTable = "";
 import { buildQuery } from './query.js';
 
+function setDatabase(database) {
+    currentDatabase = database;
+    $('#selectedDatabaseLabel').text(database);
+    console.log(database);
+}
+
 export function initializeTreeview() {
     $('#treeview').jstree({
         'core': {
@@ -37,7 +43,7 @@ export function initializeTreeview() {
             if (node.original.database) {
                 if (node.original.database != currentDatabase
                     && !currentDatabaseChanged) {
-                    currentDatabase = node.original.database;
+                    setDatabase(node.original.database);
                     currentDatabaseChanged = true;
                 }
             }
@@ -119,7 +125,7 @@ function fetchDatabaseList() {
             fetch('/api/get-databases')
                 .then(response => response.json())
                 .then(data => {
-                    currentDatabase = data[0].id; // kludge until I can get initializing selection good
+                    setDatabase(data[0].id); // kludge until I can get initializing selection good
                     cb(data);
                 }).then(() => {
                     $('#treeview').jstree('select_node', node.id);

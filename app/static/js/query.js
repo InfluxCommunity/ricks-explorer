@@ -3,9 +3,7 @@ import { currentDatabase } from './treeview.js';
 export var selectColmns = []
 export var whereColumnConditions = [{}]
 export var whereTimeConditions = [{}]
-export var database = ""
 export var table = "*"
-
 
 export function runQuery() {
     var query = editor.getValue();

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Databases</title>
+    <title>Rick's Explorer</title>
 
     <!-- External CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
@@ -25,12 +25,13 @@
 
     <!-- App JS -->
     <script type="module">
-        import { initializeTreeview } from "{{ url_for('static', filename='js/treeview.js') }}";
+        import { initializeTreeview, currentDatabase } from "{{ url_for('static', filename='js/treeview.js') }}";
         import { buildQuery, runQuery } from "{{ url_for('static', filename='js/query.js') }}";
 
         window.onload = function () {
             initializeTreeview();
             connectUIEvents();
+            
         };
 
         function connectUIEvents() {
@@ -71,6 +72,10 @@
                     <option value="1 hour">1h</option>
                 </select>
             </div>
+            <div>
+                <span>Database:</span>
+                <span id="selectedDatabaseLabel">None Selected</span>
+            </div>
             <div id="sqlEditor"></div>
             <div id="toolbar">
                 <button id="runButton"><img src="static/images/play.png" alt="Run"></button>
@@ -80,7 +85,7 @@
                 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
                 <script src="https://cdn.jsdelivr.net/npm/date-fns"></script>
                 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
-                <script src="your_script.js"></script>
+
             </div>
         </div>
 
