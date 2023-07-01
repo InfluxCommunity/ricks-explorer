@@ -18,7 +18,6 @@ export function runQuery() {
         data: JSON.stringify({ query: query, language: language, database: currentDatabase }),
         success: function (response) {
             var data = JSON.parse(response);
-
             var times = [];
             var valueArrays = {};
 
