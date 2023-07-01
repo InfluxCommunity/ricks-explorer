@@ -111,7 +111,8 @@ function populateFields(node, objects) {
 function populateTagKyes(node, objects) {
     var tag_node = $('#treeview').jstree().create_node(node, {
         'text': 'Tags',
-        'type': 'tag_node'
+        'type': 'tag_node',
+        'icon': '/static/images/tags.png'  
     }, "last");
     objects['tags'].forEach(tag => {
         $('#treeview').jstree().create_node(tag_node, tag, "last");

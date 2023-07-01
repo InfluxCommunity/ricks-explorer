@@ -50,6 +50,7 @@ def get_tag_values(database, table, key):
                     'type':'tag_value',
             'database':database,
             'table':table,
+            'icon': '/static/images/string.png',
             'key': key}for d in data]
     return jsonify(tag_values)
 
@@ -66,8 +67,9 @@ def get_columns(database, table):
     tags = [{
         'text':d['tagKey'],
         'type':'tag_key',
-         'database':database,
-         'table':table} for d in data]
+        'database':database,
+        'icon': '/static/images/key.png',
+        'table':table} for d in data]
     
     ticket_data = {
     "database": database,
