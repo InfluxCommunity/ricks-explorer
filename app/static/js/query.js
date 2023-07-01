@@ -1,10 +1,5 @@
 import { currentDatabase } from './treeview.js';
 
-export var selectColmns = []
-export var whereColumnConditions = [{}]
-export var whereTimeConditions = [{}]
-export var table = "*"
-
 export function runQuery() {
     var query = editor.getValue();
     var language = document.getElementById('languageSelect').value;
@@ -80,9 +75,63 @@ export function runQuery() {
 }
 
 export function buildQuery() {
-    // var language = document.getElementById("languageSelect").value;
-    // var selected_nodes = $('#treeView').jstree('get_selected', true);
-    // if (selected_nodes.length == 0) { return false; }
+    console.log("Building Query");
+    var fields = [];
+    var tagKeys = [];
+    var tagValues = [];
+    var tag_node_selected = false;
+    var field_node_selected = false;
+
+    var selected_nodes = $('#treeview').jstree('get_selected', true);
+    if (selected_nodes.length == 0) { return false; }
+    selected_nodes.forEach(function(node) {
+        var type = node.original.type;
+        console.log(type);
+        switch (type) {
+            case 'tag_node':
+                tag_node_selected = true;
+                break;
+            case 'tag_key':
+                tagKeys.push(node.original.text);
+                break;
+            case 'tag_value':
+                tagValues.push({[node.original.key]:node.original.text});
+                break;
+            case 'field_node':
+                field_node_selected = true;
+                break;
+            case 'field':
+                fields.push(node.original.text);
+                break;
+            default:
+                // Code to be executed if nodeType is different from all cases
+                console.log('Node type is different from all cases');
+        }
+        var mergedFieldsAndTagKeys = fields.concat(tagKeys);
+        var selectVals = "*";
+        if(mergedFieldsAndTagKeys.length > 0){
+            selectVals = mergedFieldsAndTagKeys.join(", ")
+        }
+        var tagWheres = {};
+        if(tagValues.length > 0){
+            let tagWheres = tagValues.reduce((acc, obj) => {
+                let key = Object.keys(obj)[0];
+                let value = obj[key];
+              
+                if (!acc[key]) {
+                  acc[key] = [];
+                }
+              
+                acc[key].push(value);
+                
+                return acc;
+              }, {});
+        console.log(mergedFieldsAndTagKeys);
+        console.log(tagWheres);
+              
+        }
+
+    });
     // table = selected_nodes[0].original.table;
     // var selected_columns = selected_nodes
     //     .filter(function (node) {

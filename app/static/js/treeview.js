@@ -20,6 +20,7 @@ export function initializeTreeview() {
         if (node.a_attr && node.a_attr.class === 'disabled') {
             return false;
         }
+    
         handleSelectionChange();
         if (type == 'database' && node.children.length === 0) {
             populate_children('/api/get-tables/', node);
@@ -31,6 +32,7 @@ export function initializeTreeview() {
             populate_children(`api/get-tag-values/${node.original.database}/${node.original.table}/`,
                 node)
         }
+
         buildQuery();
     });
 
@@ -129,8 +131,6 @@ function fetchDatabaseList() {
                 .then(data => {
                     setDatabase(data[0].id); // kludge until I can get initializing selection good
                     cb(data);
-                }).then(() => {
-                    $('#treeview').jstree('select_node', node.id);
                 })
                 .catch(error => console.error('Error:', error));
         }

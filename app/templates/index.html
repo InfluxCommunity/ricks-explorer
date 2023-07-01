@@ -59,6 +59,13 @@
                 localStorage.setItem('queryHistory', JSON.stringify([]));
                 currentQueryIndex = 0;
             });
+            $('#editModeSelect').change(function () {
+                if ($('#editModeSelect').val() == "manual") {
+                    editor.setReadOnly(false);
+                } else {
+                    editor.setReadOnly(true);
+                }
+            });
         }
 
         function loadQueryFromHistory() {
@@ -121,6 +128,12 @@
                 <span>Database:</span>
                 <span id="selectedDatabaseLabel">None Selected</span>
             </div>
+            <div>
+                <select id="editModeSelect">
+                    <option value="builder">Builder Mode</option>
+                    <option value="manual">Editor Mode</option>
+                </select>
+            </div>
             <div id="sqlEditor"></div>
             <div id="toolbar">
                 <button id="runButton"><img src="static/images/play.png" alt="Run"></button>
@@ -146,6 +159,7 @@
         var editor = ace.edit("sqlEditor");
         editor.setTheme("ace/theme/monokai");
         editor.session.setMode("ace/mode/sql");
+        editor.setReadOnly(true);
     </script>
 </body>
 

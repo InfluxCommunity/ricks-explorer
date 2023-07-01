@@ -47,7 +47,7 @@ def get_tag_values(database, table, key):
     else:
         tag_values = [{
             'text':d['value'],
-                    'type':'tag_value',
+            'type':'tag_value',
             'database':database,
             'table':table,
             'icon': '/static/images/string.png',
@@ -112,7 +112,7 @@ def get_tables(database):
         if len(data) == 0:
             return _empty_database_nodes(database, "Empty")
         formatted_data = [{'text': d['name'], 
-                           'id': d['name'],
+                           'id': f"{database}_{d['name']}",
                            'type': 'table',
                            'database':database,
                            'icon': '/static/images/table.png'} for d in data]
