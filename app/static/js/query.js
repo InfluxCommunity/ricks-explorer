@@ -3,7 +3,6 @@ import { currentDatabase } from './treeview.js';
 export function runQuery() {
     var query = editor.getValue();
     var language = document.getElementById('languageSelect').value;
-
     $.ajax({
         url: '/api/query',  // URL of your Flask route
         type: 'POST',
@@ -75,81 +74,77 @@ export function runQuery() {
 }
 
 export function buildQuery() {
-    console.log("Building Query");
     var fields = [];
     var tagKeys = [];
     var tagValues = [];
-    var tag_node_selected = false;
-    var field_node_selected = false;
-
+    var table = "";
     var selected_nodes = $('#treeview').jstree('get_selected', true);
     if (selected_nodes.length == 0) { return false; }
-    selected_nodes.forEach(function(node) {
+    selected_nodes.forEach(function (node) {
         var type = node.original.type;
-        console.log(type);
         switch (type) {
             case 'tag_node':
                 tag_node_selected = true;
+                table = node.original.table;
                 break;
             case 'tag_key':
                 tagKeys.push(node.original.text);
+                table = node.original.table;
                 break;
             case 'tag_value':
-                tagValues.push({[node.original.key]:node.original.text});
+                tagValues.push({ [node.original.key]: node.original.text });
+                table = node.original.table;
                 break;
             case 'field_node':
                 field_node_selected = true;
+                table = node.original.table;
                 break;
             case 'field':
                 fields.push(node.original.text);
+                table = node.original.table;
                 break;
-            default:
-                // Code to be executed if nodeType is different from all cases
-                console.log('Node type is different from all cases');
+            case 'table':
+                table = node.original.table;
+                break;
         }
         var mergedFieldsAndTagKeys = fields.concat(tagKeys);
         var selectVals = "*";
-        if(mergedFieldsAndTagKeys.length > 0){
-            selectVals = mergedFieldsAndTagKeys.join(", ")
+        if (mergedFieldsAndTagKeys.length > 0) {
+            selectVals = mergedFieldsAndTagKeys.join(", ") + ', "time"'
         }
-        var tagWheres = {};
-        if(tagValues.length > 0){
-            let tagWheres = tagValues.reduce((acc, obj) => {
+        var tagWheres = "";
+        if (tagValues.length > 0) {
+            let tagsObj = tagValues.reduce((acc, obj) => {
                 let key = Object.keys(obj)[0];
                 let value = obj[key];
-              
-                if (!acc[key]) {
-                  acc[key] = [];
-                }
-              
-                acc[key].push(value);
-                
-                return acc;
-              }, {});
-        console.log(mergedFieldsAndTagKeys);
-        console.log(tagWheres);
-              
-        }
 
+                if (!acc[key]) {
+                    acc[key] = [];
+                }
+
+                acc[key].push(value);
+
+                return acc;
+            }, {});
+            tagWheres = Object.entries(tagsObj)
+                .map(([key, values]) => `"${key}" in ('${values.join("','")}')`)
+                .join("\nAND \n\t");
+        }
+        var q = `SELECT
+    ${selectVals}
+FROM
+    "${table}"
+WHERE
+    ${tagWheres}`;
+
+        var timeClause = "";
+        if (tagWheres != "") {
+            timeClause += "\nAND\n";
+        }
+        var interval = document.getElementById("durationSelect").value;
+        timeClause += `\t"time" > now() - interval '${interval}'`
+        q += timeClause;
+        q += `\nORDER BY \n\t "time" desc`
+        editor.setValue(q);
     });
-    // table = selected_nodes[0].original.table;
-    // var selected_columns = selected_nodes
-    //     .filter(function (node) {
-    //         return node.original.type === 'column';
-    //     })
-    //     .map(function (node) {
-    //         return node.text;
-    //     })
-    //     .join(', ');
-    // query = "";
-    // if (language == "sql") {
-    //     var interval = document.getElementById("durationSelect").value;
-    //     var query = `SELECT\n\t${selected_columns}\nFROM\n\t${table}\nWHERE\n\ttime > now() - interval '${interval}'`;
-    // }
-    // else if (language == "influxql") {
-    //     interval = $("#durationSelect option:selected").text();
-    //     var query = `SELECT\n\t${selected_columns}\nFROM\n\t${table}\nWHERE\n\ttime > now() - ${interval}`;
-    // }
-    // editor.setValue("");
-    // editor.setValue(query);
 }

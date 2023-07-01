@@ -81,10 +81,11 @@ def get_columns(database, table):
     fields = [{'text':d['fieldKey'],
                 'type':'field',
                 'database':database,
+                'table':table,
                 'icon': '/static/images/fields.png',
                 'table':table} for d in data]
 
-    data = {'tags': tags, 'fields':fields}
+    data = {'tags': tags, 'fields':fields, 'table':table}
     return jsonify(data)
 
 def punch_ticket(ticket_data):
@@ -114,6 +115,7 @@ def get_tables(database):
         formatted_data = [{'text': d['name'], 
                            'id': f"{database}_{d['name']}",
                            'type': 'table',
+                           'table': d['name'],
                            'database':database,
                            'icon': '/static/images/table.png'} for d in data]
         return jsonify(formatted_data)

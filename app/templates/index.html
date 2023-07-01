@@ -79,11 +79,12 @@
         }
 
         function saveQueryHistory() {
-            const query = editor.getValue();
-            const database = currentDatabase;
-            const history = JSON.parse(localStorage.getItem('queryHistory')) || [];
-            // don't save the same query over and over
+            var query = editor.getValue();
+            var database = currentDatabase;
+            var history = JSON.parse(localStorage.getItem('queryHistory')) || [];
+ 
             if (history.length > 0) {
+                if(currentQueryIndex == -1) currentQueryIndex = 0;
                 if (history[currentQueryIndex].database != database ||
                     history[currentQueryIndex].query != query) {
                     history.unshift({ query, database });
@@ -108,8 +109,13 @@
                 </select>
                 <span>Time Range Start:</span>
                 <select id="durationSelect">
+                    <option value="1 minutes">1m</option>
                     <option value="5 minutes">5m</option>
+                    <option value="15 minutes">15m</option>
                     <option value="1 hour">1h</option>
+                    <option value="6 hour">6h</option>
+                    <option value="1 days">1d</option>
+                    <option value="7 days">7d</option>
                 </select>
             </div>
             <div>

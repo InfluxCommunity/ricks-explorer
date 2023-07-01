@@ -70,7 +70,7 @@ export function initializeTreeview() {
         fetch(end_point + node.text)
             .then(response => response.json())
             .then(objects => {
-                populateTagKyes(node, objects);
+                populateTagKeys(node, objects);
                 populateFields(node, objects);
             })
             .catch(error => console.error('Error:', error));
@@ -79,7 +79,6 @@ export function initializeTreeview() {
         fetch(end_point + node.text)
             .then(response => response.json())
             .then(children => {
-                // Add each table as a child node to the database node
                 children.forEach(child => {
                     $('#treeview').jstree().create_node(node, child, "last");
                 });
@@ -103,6 +102,7 @@ function populateFields(node, objects) {
     var field_node = $('#treeview').jstree().create_node(node, {
         'text': 'Fields',
         'type': 'field_node',
+        'table': objects['table'],
         'icon': '/static/images/fields.png'
     }, "last");
     objects['fields'].forEach(field => {
@@ -111,10 +111,11 @@ function populateFields(node, objects) {
     $('#treeview').jstree('open_node', field_node);
 }
 
-function populateTagKyes(node, objects) {
+function populateTagKeys(node, objects) {
     var tag_node = $('#treeview').jstree().create_node(node, {
         'text': 'Tags',
         'type': 'tag_node',
+        'table': objects['table'],
         'icon': '/static/images/tags.png'  
     }, "last");
     objects['tags'].forEach(tag => {
