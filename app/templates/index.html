@@ -43,11 +43,16 @@
                 currentQueryIndex = 0;
             });
             $('#previousQueryButton').click(function () {
-                currentQueryIndex++;
+                let history = JSON.parse(localStorage.getItem('queryHistory')) || [];
+                if (currentQueryIndex < history.length - 1) {
+                    currentQueryIndex++;
+                }
                 loadQueryFromHistory();
             });
             $('#nextQueryButton').click(function () {
-                currentQueryIndex--;
+                if (currentQueryIndex > 0) {
+                    currentQueryIndex--;
+                }
                 loadQueryFromHistory();
             });
             $('#clearHistoryButton').click(function () {
@@ -58,8 +63,8 @@
 
         function loadQueryFromHistory() {
             let history = JSON.parse(localStorage.getItem('queryHistory')) || [];
-            
-            if(currentQueryIndex > -1 && currentQueryIndex < history.length) {
+
+            if (currentQueryIndex > -1 && currentQueryIndex < history.length) {
                 const query = history[currentQueryIndex];
                 setDatabase(query.database);
                 editor.setValue(query.query);
@@ -70,8 +75,13 @@
             const query = editor.getValue();
             const database = currentDatabase;
             const history = JSON.parse(localStorage.getItem('queryHistory')) || [];
-
-            history.unshift({ query, database });
+            // don't save the same query over and over
+            if (history.length > 0) {
+                if (history[currentQueryIndex].database != database ||
+                    history[currentQueryIndex].query != query) {
+                    history.unshift({ query, database });
+                }
+            }
             localStorage.setItem('queryHistory', JSON.stringify(history));
         }
     </script>
@@ -119,7 +129,7 @@
                         <button id="nextQueryButton">
                             >>
                         </button>
-                <button id="clearHistoryButton">Clear History</button>
+                        <button id="clearHistoryButton">Clear History</button>
             </div>
             <div>
                 <canvas id="lineChart"></canvas>

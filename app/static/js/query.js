@@ -80,7 +80,6 @@ export function runQuery() {
 }
 
 export function buildQuery() {
-    console.log("let's build this query!")
     // var language = document.getElementById("languageSelect").value;
     // var selected_nodes = $('#treeView').jstree('get_selected', true);
     // if (selected_nodes.length == 0) { return false; }
