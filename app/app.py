@@ -106,17 +106,22 @@ def get_tables(database):
         df = flight_reader.read_all().to_pandas()
         
         data = df.to_dict(orient='records')
+        if len(data) == 0:
+            return _empty_database_nodes(database, "Empty")
         formatted_data = [{'text': d['name'], 
                            'id': d['name'],
                            'type': 'table',
                            'database':database,
                            'icon': '/static/images/table.png'} for d in data]
-
         return jsonify(formatted_data)
+    
     except Exception as e:
         logging.error(f"error getting tables: {e}")
-        return jsonify([{
-            'text':str(e),
+        return _empty_database_nodes(database, str(e))
+
+def _empty_database_nodes(database, text):
+    return jsonify([{
+            'text':text,
             'disabled':'true',
             'type': 'table',
             'database':database,
