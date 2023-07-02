@@ -27,7 +27,7 @@
     <script type="module">
         import { initializeTreeview, currentDatabase, setDatabase } from "{{ url_for('static', filename='js/treeview.js') }}";
         import { buildQuery } from "{{ url_for('static', filename='js/queryBuilder.js') }}";
-        import { runQuery } from "{{ url_for('static', filename='js/queryRunner.js') }}";
+        import { runQuery, toggleView } from "{{ url_for('static', filename='js/queryRunner.js') }}";
 
         var currentQueryIndex = -1;
         window.onload = function () {
@@ -69,6 +69,7 @@
                     editor.setReadOnly(true);
                 }
             });
+            $('#visualizationSelect').change(function(){ toggleView(); });
         }
 
         function loadQueryFromHistory() {
@@ -156,19 +157,24 @@
             <div id="toolbar">
                 <button id="runButton"><img src="static/images/play.png" alt="Run"></button>
                 <button id="previousQueryButton">
-                    << </button>
-                        <button id="nextQueryButton">
-                            >>
-                        </button>
-                        <button id="clearHistoryButton">Clear History</button>
+                    << 
+                </button>
+                <button id="nextQueryButton">
+                    >>
+                </button>
+                <button id="clearHistoryButton">Clear History</button>
+                <select id="visualizationSelect">
+                    <option value="graph">Graph</option>
+                    <option value="table">Table</option>                    
+                </select>
             </div>
-            <div>
+            <div id="graphDiv">
                 <canvas id="lineChart"></canvas>
                 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
                 <script src="https://cdn.jsdelivr.net/npm/date-fns"></script>
                 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
-
             </div>
+            <div id="tableDiv" style="display: none;">TABLE</div>
         </div>
 
     </div>

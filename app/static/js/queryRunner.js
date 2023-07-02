@@ -1,5 +1,8 @@
 import { currentDatabase } from './treeview.js';
-import { generateDatasets, renderChart } from './graphRenderer.js';
+import { generateDatasets, renderGraph } from './graphRenderer.js';
+
+let valueArrays = {};
+let times = [];
 
 export function runQuery() {
     const query = editor.getValue();
@@ -7,7 +10,7 @@ export function runQuery() {
     const requestData = JSON.stringify({ query, language, database: currentDatabase });
 
     $.ajax({
-        url: '/api/query',  
+        url: '/api/query',
         type: 'POST',
         contentType: 'application/json',
         data: requestData,
@@ -16,13 +19,30 @@ export function runQuery() {
     });
 }
 
+export function toggleView() {
+    let view = $('#visualizationSelect').val();
+    if(view == "graph"){
+        $('#graphDiv').show();
+        $('#tableDiv').hide();
+        if(valueArrays != {}) {
+            const datasets = generateDatasets(valueArrays);
+            renderGraph(times, datasets); 
+        }
+    } else {
+        $('#graphDiv').hide();
+        $('#tableDiv').show();
+    }
+}
 function handleResponse(response) {
     const data = JSON.parse(response);
-    const times = data.map(item => new Date(item.time));
-    const valueArrays = extractValueArrays(data);
-    const datasets = generateDatasets(valueArrays);
-
-    renderChart(times, datasets);
+    times = data.map(item => new Date(item.time));
+    valueArrays = extractValueArrays(data);
+    if ($('#visualizationSelect').val() == "graph") {
+        const datasets = generateDatasets(valueArrays);
+        renderGraph(times, datasets);
+    } else {
+        console.log("make a table")
+    }
 }
 
 function handleError(error) {

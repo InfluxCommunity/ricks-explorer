@@ -16,7 +16,7 @@ export function generateDatasets(valueArrays) {
 }
 
 // Render chart using the provided times and datasets
-export function renderChart(times, datasets) {
+export function renderGraph(times, datasets) {
     if (window.myChart instanceof Chart) {
         window.myChart.destroy();
     }
