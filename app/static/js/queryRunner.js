@@ -1,8 +1,8 @@
 import { currentDatabase } from './treeview.js';
-import { generateDatasets, renderGraph } from './graphRenderer.js';
+import { renderGraph } from './graphRenderer.js';
+import {renderTable} from './tableRenderer.js';
 
-let valueArrays = {};
-let times = [];
+let data = [];
 
 export function runQuery() {
     const query = editor.getValue();
@@ -24,24 +24,24 @@ export function toggleView() {
     if(view == "graph"){
         $('#graphDiv').show();
         $('#tableDiv').hide();
-        if(valueArrays != {}) {
-            const datasets = generateDatasets(valueArrays);
-            renderGraph(times, datasets); 
+        if(data.length > 0) {
+            renderGraph(data);
         }
     } else {
         $('#graphDiv').hide();
         $('#tableDiv').show();
+        if(data.length > 0){
+            renderTable(data);}
     }
 }
+
 function handleResponse(response) {
-    const data = JSON.parse(response);
-    times = data.map(item => new Date(item.time));
-    valueArrays = extractValueArrays(data);
+    data = JSON.parse(response);
+
     if ($('#visualizationSelect').val() == "graph") {
-        const datasets = generateDatasets(valueArrays);
-        renderGraph(times, datasets);
+        renderGraph(data);
     } else {
-        console.log("make a table")
+        renderTable(data);
     }
 }
 
@@ -49,21 +49,5 @@ function handleError(error) {
     console.log(error);
 }
 
-// Extract value arrays from the data
-function extractValueArrays(data) {
-    let valueArrays = {};
 
-    for (let item of data) {
-        for (let key in item) {
-            if (key !== "time") {
-                if (!(key in valueArrays)) {
-                    valueArrays[key] = [];
-                }
-                valueArrays[key].push(item[key]);
-            }
-        }
-    }
-
-    return valueArrays;
-}
 

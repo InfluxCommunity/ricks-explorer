@@ -16,17 +16,39 @@ export function generateDatasets(valueArrays) {
 }
 
 // Render chart using the provided times and datasets
-export function renderGraph(times, datasets) {
+export function renderGraph(data) {
     if (window.myChart instanceof Chart) {
         window.myChart.destroy();
     }
+    const times = data.map(item => new Date(item.time));
     
+    let valueArrays = extractValueArrays(data);
+    const datasets = generateDatasets(valueArrays);
+
     const ctx = document.getElementById('lineChart').getContext('2d');
     window.myChart = new Chart(ctx, {
         type: 'line',
         data: { labels: times, datasets },
         options: getChartOptions()
     });
+}
+
+// Extract value arrays from the data
+function extractValueArrays(data) {
+    let valueArrays = {};
+
+    for (let item of data) {
+        for (let key in item) {
+            if (key !== "time") {
+                if (!(key in valueArrays)) {
+                    valueArrays[key] = [];
+                }
+                valueArrays[key].push(item[key]);
+            }
+        }
+    }
+
+    return valueArrays;
 }
 
 // Get options for the chart

@@ -9,6 +9,7 @@
     <!-- External CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 
     <!-- External JS -->
@@ -17,11 +18,12 @@
         integrity="sha512-zTdDEt8tOqDRVRFKgypzg8g7FJE7A9lhnTZ6YpUlufaF/XvjIGF/zaPljDhER8XmIwePEAjBjv27TEuubED0/A=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/mode-sql.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/theme-monokai.js"></script>
 
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
 
     <!-- App JS -->
     <script type="module">
@@ -69,7 +71,7 @@
                     editor.setReadOnly(true);
                 }
             });
-            $('#visualizationSelect').change(function(){ toggleView(); });
+            $('#visualizationSelect').change(function () { toggleView(); });
         }
 
         function loadQueryFromHistory() {
@@ -157,16 +159,15 @@
             <div id="toolbar">
                 <button id="runButton"><img src="static/images/play.png" alt="Run"></button>
                 <button id="previousQueryButton">
-                    << 
-                </button>
-                <button id="nextQueryButton">
-                    >>
-                </button>
-                <button id="clearHistoryButton">Clear History</button>
-                <select id="visualizationSelect">
-                    <option value="graph">Graph</option>
-                    <option value="table">Table</option>                    
-                </select>
+                    << </button>
+                        <button id="nextQueryButton">
+                            >>
+                        </button>
+                        <button id="clearHistoryButton">Clear History</button>
+                        <select id="visualizationSelect">
+                            <option value="graph">Graph</option>
+                            <option value="table">Table</option>
+                        </select>
             </div>
             <div id="graphDiv">
                 <canvas id="lineChart"></canvas>
@@ -174,7 +175,9 @@
                 <script src="https://cdn.jsdelivr.net/npm/date-fns"></script>
                 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
             </div>
-            <div id="tableDiv" style="display: none;">TABLE</div>
+            <div id="tableDiv" style="display: none;">
+                <table id="myTable"></table>
+            </div>
         </div>
 
     </div>
