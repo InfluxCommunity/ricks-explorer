@@ -8,6 +8,7 @@ It current allows you to pass in a list of databases, and then shows the data in
 My goal for this project is that any developer can work on it. As such, I keep it simple:
  1. The backend is a Flask (i.e. Python server).
  2. The front end uses JQuery and web controls built on JQuery, but no complicated frameworks, and especially no "toolchains", etc... 
+ 3. The server is stateless (with the obvious exception of start up settings). That means any state for the convenience of the user should reside in the client code, and that should be optional. This means that the server knows how to query the database, it doesn't know about users, user management, or anything similar. The only page it knows how to render is ```index.html```. 
 
 My goal is that anyone can read through the code, and be able to easily fix it or change it to suit their needs. 
 
