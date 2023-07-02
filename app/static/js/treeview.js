@@ -1,6 +1,6 @@
 export var currentDatabase = "";
 var currentTable = "";
-import { buildQuery } from './query.js';
+import { buildQuery } from './queryBuilder.js';
 
 export function setDatabase(database) {
     currentDatabase = database;

@@ -26,7 +26,7 @@
     <!-- App JS -->
     <script type="module">
         import { initializeTreeview, currentDatabase, setDatabase } from "{{ url_for('static', filename='js/treeview.js') }}";
-        import { buildQuery } from "{{ url_for('static', filename='js/query.js') }}";
+        import { buildQuery } from "{{ url_for('static', filename='js/queryBuilder.js') }}";
         import { runQuery } from "{{ url_for('static', filename='js/queryRunner.js') }}";
 
         var currentQueryIndex = -1;
