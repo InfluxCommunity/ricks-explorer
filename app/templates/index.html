@@ -38,6 +38,8 @@
         function connectUIEvents() {
             $('#durationSelect').change(function () { buildQuery(); });
             $('#languageSelect').change(function () { buildQuery(); });
+            $('#aggregationSelect').change(function () { buildQuery(); });
+            $('#intervalSelect').change(function () { buildQuery(); });
             $('#runButton').click(function () {
                 runQuery();
                 saveQueryHistory();

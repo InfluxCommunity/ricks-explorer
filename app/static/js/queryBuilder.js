@@ -8,7 +8,8 @@ export function buildQuery() {
     const selectVals = getSelectString(fields, tagKeys);
     const tagWheres = getTagWheres(tagValues);
     const timeClause = getTimeClause(tagWheres);
-    const query = generateQuery(selectVals, table, tagWheres, timeClause);
+    const groupClause = getGroupClause();
+    const query = generateQuery(selectVals, table, tagWheres, timeClause, groupClause);
 
     editor.setValue(query);
 }
@@ -49,16 +50,31 @@ function getQueryComponents(selectedNodes) {
 }
 
 function getSelectString(fields, tagKeys) {
-    let mergedFieldsAndTagKeys = fields.concat(tagKeys);
-    let selectVals = "*";
-
-    if (mergedFieldsAndTagKeys.length > 0) {
-        selectVals = mergedFieldsAndTagKeys.join(", ") + ', "time"';
+    let aggregator = $('#aggregationSelect').val();
+    if ( aggregator == "none") {
+        return unAggregatedSelect();
     }
-
-    return selectVals;
+    else {
+        let bin = getDateBin();
+        let q = `\t${bin} AS time,\n`;
+        let f =  fields.map(field => `${aggregator}("${field}") as ${field}`).join(", ");
+        return q + "\t" + f;
+    }
+    function unAggregatedSelect() {
+        let mergedFieldsAndTagKeys = fields.concat(tagKeys);
+        let selectString = "*";
+        if (mergedFieldsAndTagKeys.length > 0) {
+            selectString = mergedFieldsAndTagKeys.join(", ") + ', "time"';
+        }
+        console.log(selectString);
+        return selectString;
+    }
 }
 
+function getDateBin(){
+    let interval = $('#intervalSelect').val();
+    return `date_bin(interval'${interval}', time, TIMESTAMP '1970-01-01 00:00:00Z')`;
+}
 function getTagWheres(tagValues) {
     let tagWheres = "";
 
@@ -96,17 +112,25 @@ function getTimeClause(tagWheres) {
 
     return timeClause;
 }
+function getGroupClause(){
+    let aggregator = $('#aggregationSelect').val();
+    let orderBy = `ORDER BY\n\t"time" desc`;
+    if ( aggregator == "none") {
+        return orderBy;
+    } else {
 
-function generateQuery(selectVals, table, tagWheres, timeClause) {
+        return `GROUP BY \n\t${getDateBin()}\n${orderBy}`;
+    }
+}
+function generateQuery(selectString, table, tagWheres, timeClause, groupClause) {
     return `SELECT
-${selectVals}
+${selectString}
 FROM
 "${table}"
 WHERE
 ${tagWheres}
 ${timeClause}
-ORDER BY 
-"time" desc`;
+${groupClause}`
 }
 
 
