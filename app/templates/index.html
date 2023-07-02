@@ -85,9 +85,9 @@
             var query = editor.getValue();
             var database = currentDatabase;
             var history = JSON.parse(localStorage.getItem('queryHistory')) || [];
- 
+
             if (history.length > 0) {
-                if(currentQueryIndex == -1) currentQueryIndex = 0;
+                if (currentQueryIndex == -1) currentQueryIndex = 0;
                 if (history[currentQueryIndex].database != database ||
                     history[currentQueryIndex].query != query) {
                     history.unshift({ query, database });
@@ -125,12 +125,21 @@
                 <span>Aggregation:</span>
                 <select id="aggregationSelect">
                     <option value='none'>None</option>
-                    <option value="mean">Mean</option>
+                    <option value="mean">Mean (avg)</option>
+                    <option value="median">Median</option>
+                    <option value="count">Count</option>
+                    <option value="sum">Sum</option>
+                    <option value="min">Min</option>
+                    <option value="max">Max</option>
                 </select>
                 <span>Aggregation Interval:</span>
                 <select id="intervalSelect">
-                    <option value='1 minute'>1m</option>
+                    <option value="1 minutes">1m</option>
+                    <option value="5 minutes">5m</option>
+                    <option value="15 minutes">15m</option>
                     <option value="1 hour">1h</option>
+                    <option value="6 hour">6h</option>
+                    <option value="1 days">1d</option>
                 </select>
             </div>
             <div>

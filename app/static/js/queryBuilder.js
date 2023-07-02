@@ -14,7 +14,6 @@ export function buildQuery() {
     editor.setValue(query);
 }
 
-
 function getSelectedNodes() {
     return $('#treeview').jstree('get_selected', true);
 }
@@ -55,18 +54,22 @@ function getSelectString(fields, tagKeys) {
         return unAggregatedSelect();
     }
     else {
+        return aggregatedSelect();
+    }
+    
+    function aggregatedSelect() {
         let bin = getDateBin();
         let q = `\t${bin} AS time,\n`;
-        let f =  fields.map(field => `${aggregator}("${field}") as ${field}`).join(", ");
+        let f = fields.map(field => `${aggregator}("${field}") as ${field}`).join(", ");
         return q + "\t" + f;
     }
+
     function unAggregatedSelect() {
         let mergedFieldsAndTagKeys = fields.concat(tagKeys);
         let selectString = "*";
         if (mergedFieldsAndTagKeys.length > 0) {
             selectString = mergedFieldsAndTagKeys.join(", ") + ', "time"';
         }
-        console.log(selectString);
         return selectString;
     }
 }
@@ -126,7 +129,7 @@ function generateQuery(selectString, table, tagWheres, timeClause, groupClause) 
     return `SELECT
 ${selectString}
 FROM
-"${table}"
+\t"${table}"
 WHERE
 ${tagWheres}
 ${timeClause}
