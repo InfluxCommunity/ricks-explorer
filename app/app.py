@@ -78,10 +78,12 @@ def get_columns(database, table):
     df = punch_ticket(ticket_data)
 
     data = df.to_dict(orient='records')
+    print(data)
     fields = [{'text':d['fieldKey'],
                 'type':'field',
                 'database':database,
                 'table':table,
+                'valueType':d['fieldType'],
                 'icon': '/static/images/fields.png',
                 'table':table} for d in data]
 
