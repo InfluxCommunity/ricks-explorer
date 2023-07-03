@@ -86,8 +86,10 @@ export function initializeTreeview() {
             .then(objects => {
                 populateTagKeys(node, objects);
                 populateFields(node, objects);
-            })
+            }).then(data => $('#treeview').jstree('open_node', node))
             .catch(error => console.error('Error:', error));
+        
+            
     }
     function populate_children(end_point, node) {
         fetch(end_point + node.text)

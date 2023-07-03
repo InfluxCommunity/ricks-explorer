@@ -1,3 +1,7 @@
+body {
+    font-family: 'Lucida Console', monospace;
+}
+
 .disabled {
     color: #aaa;
     cursor: not-allowed;
