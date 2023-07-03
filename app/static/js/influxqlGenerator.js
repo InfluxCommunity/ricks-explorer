@@ -68,7 +68,6 @@ function getTimeClause(tagWheres) {
 
 function getGroupClause(){
     let aggregator = $('#aggregationSelect').val();
-    let orderBy = `ORDER BY\n\t"time" desc`;
     if ( aggregator == "none") {
         return "";
     } else {
