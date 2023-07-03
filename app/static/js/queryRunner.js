@@ -24,12 +24,14 @@ export function toggleView() {
     if(view == "graph"){
         $('#graphDiv').show();
         $('#tableDiv').hide();
+        $('#errorDiv').hide();
         if(data.length > 0) {
             renderGraph(data);
         }
     } else {
         $('#graphDiv').hide();
         $('#tableDiv').show();
+        $('#errorDiv').hide();
         if(data.length > 0){
             renderTable(data);}
     }
@@ -37,16 +39,24 @@ export function toggleView() {
 
 function handleResponse(response) {
     data = JSON.parse(response);
-
+    $('#errorDiv').hide();
     if ($('#visualizationSelect').val() == "graph") {
+        $('#graphDiv').show();
+        $('#tableDiv').hide();
         renderGraph(data);
     } else {
+        $('#graphDiv').hide();
+        $('#tableDiv').show();
         renderTable(data);
     }
 }
 
 function handleError(error) {
     console.log(error);
+    $('#graphDiv').hide();
+    $('#tableDiv').hide();
+    $('#errorDiv').show();
+    $('#errorDiv').text(error.responseText);
 }
 
 

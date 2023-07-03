@@ -55,11 +55,18 @@
     border-color: black;
 }
 
+#errorDiv {
+    display: none;
+    width: 600px;
+    padding: 20px;
+    text-align: center;
+    color: red;
+}
+
 .app-header {
     display: flex;
     align-items: center;
     gap: 15px;
-    border-bottom: 1px solid #333;
 }
 
 .app-header h1 {

@@ -35,13 +35,14 @@
         window.onload = function () {
             initializeTreeview();
             connectUIEvents();
+            loadUIState();
         };
 
         function connectUIEvents() {
-            $('#durationSelect').change(function () { buildQuery(); });
-            $('#languageSelect').change(function () { buildQuery(); });
-            $('#aggregationSelect').change(function () { buildQuery(); });
-            $('#intervalSelect').change(function () { buildQuery(); });
+            $('#durationSelect').change(function () { buildQuery(); saveUIState(); });
+            $('#languageSelect').change(function () { buildQuery(); saveUIState(); });
+            $('#aggregationSelect').change(function () { buildQuery(); saveUIState(); });
+            $('#intervalSelect').change(function () { buildQuery(); saveUIState(); });
             $('#runButton').click(function () {
                 runQuery();
                 saveQueryHistory();
@@ -72,6 +73,7 @@
                     editor.setReadOnly(true);
                     $('#builderControlsDiv').show();
                 }
+                saveUIState();
             });
             $('#visualizationSelect').change(function () { toggleView(); });
         }
@@ -83,6 +85,7 @@
                 const query = history[currentQueryIndex];
                 setDatabase(query.database);
                 console.log(query);
+                editor.setValue(query.query);
                 $('#languageSelect').val(query.language);
             }
         }
@@ -92,7 +95,7 @@
             var database = currentDatabase;
             var language = $('#languageSelect').val();
             var history = JSON.parse(localStorage.getItem('queryHistory')) || [];
-            console.log(query, database, language );
+            console.log(query, database, language);
             if (history.length > 0) {
                 if (currentQueryIndex == -1) currentQueryIndex = 0;
                 if (history[currentQueryIndex].database != database ||
@@ -105,6 +108,36 @@
             }
             localStorage.setItem('queryHistory', JSON.stringify(history));
         }
+        function saveUIState() {
+            let elements = ["editModeSelect",
+                "languageSelect",
+                "durationSelect",
+                "aggregationSelect",
+                "intervalSelect"];
+
+            let state = {};
+
+            elements.forEach(function (id) {
+                let value = $('#' + id).val();
+                state[id] = value;
+            });
+            localStorage.setItem('uiState', JSON.stringify(state));
+        }
+
+        function loadUIState() {
+            let storedState = JSON.parse(localStorage.getItem('uiState'));
+
+            if (storedState) {
+                for (let id in storedState) {
+                    $('#' + id).val(storedState[id]);
+                }
+            }
+            if ($('#editModeSelect').val() == "manual") {
+                    editor.setReadOnly(false);
+                    $('#builderControlsDiv').hide();
+                } 
+        }
+
     </script>
 </head>
 
@@ -140,6 +173,7 @@
                     <div id="tableDiv" style="display: none;">
                         <table id="myTable"></table>
                     </div>
+                    <div id="errorDiv">Display Errors Here</div>
                 </div>
             </div>
             <div id="controlsDiv">
@@ -154,8 +188,6 @@
                         <option value="builder">Builder</option>
                         <option value="manual">Manual</option>
                     </select>
-                </div>
-                <div id="builderControlsDiv">
                     <div>
                         <span>Language:</span>
                         <select id="languageSelect">
@@ -163,6 +195,8 @@
                             <option value="influxql">InfluxQL</option>
                         </select>
                     </div>
+                </div>
+                <div id="builderControlsDiv">
                     <div>
                         <span>Time Range Start:</span>
                         <select id="durationSelect">

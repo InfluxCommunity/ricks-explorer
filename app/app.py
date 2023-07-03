@@ -165,10 +165,12 @@ def query():
     ticket_bytes = json.dumps(ticket_data)
     ticket = Ticket(ticket_bytes)
     
-    flight_reader = client.do_get(ticket, options)
-    df = flight_reader.read_all().to_pandas()
-    json_str = df.to_json(orient='records')
-    return json_str, 200
-
+    try:
+        flight_reader = client.do_get(ticket, options)
+        df = flight_reader.read_all().to_pandas()
+        json_str = df.to_json(orient='records')
+        return json_str, 200
+    except Exception as e:
+        return str(e), 500
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5002)
