@@ -67,8 +67,10 @@
             $('#editModeSelect').change(function () {
                 if ($('#editModeSelect').val() == "manual") {
                     editor.setReadOnly(false);
+                    $('#builderControlsDiv').hide();
                 } else {
                     editor.setReadOnly(true);
+                    $('#builderControlsDiv').show();
                 }
             });
             $('#visualizationSelect').change(function () { toggleView(); });
@@ -129,66 +131,75 @@
                                 <option value="table">Table</option>
                             </select>
                 </div>
+                <div id="visualizationDiv">
+                    <div id="graphDiv">
+                        <canvas id="lineChart"></canvas>
+                        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                        <script src="https://cdn.jsdelivr.net/npm/date-fns"></script>
+                        <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+                    </div>
+                    <div id="tableDiv" style="display: none;">
+                        <table id="myTable"></table>
+                    </div>
+                </div>
             </div>
             <div id="controlsDiv">
+                <div id="databaseLabelDiv">
+                    <span>Current Database:</span>
+                    <span id="selectedDatabaseLabel">None Selected</span>
+                </div>
                 <div>
+                    <span>Editing Mode:</span>
                     <select id="editModeSelect">
-                        <option value="builder">Builder Mode</option>
-                        <option value="manual">Editor Mode</option>
+                        <option value="builder">Builder</option>
+                        <option value="manual">Manual</option>
                     </select>
                 </div>
-                <div>
+                <div id="builderControlsDiv">
                     <div>
-                        <span>Database:</span>
-                        <span id="selectedDatabaseLabel">None Selected</span>
+                        <span>Language:</span>
+                        <select id="languageSelect">
+                            <option value="sql">SQL</option>
+                            <option value="influxql">InfluxQL</option>
+                        </select>
                     </div>
-                    <span>Language:</span>
-                    <select id="languageSelect">
-                        <option value="sql">SQL</option>
-                        <option value="influxql">InfluxQL</option>
-                    </select>
-                    <span>Time Range Start:</span>
-                    <select id="durationSelect">
-                        <option value="1 minutes">1m</option>
-                        <option value="5 minutes">5m</option>
-                        <option value="15 minutes">15m</option>
-                        <option value="1 hour">1h</option>
-                        <option value="6 hour">6h</option>
-                        <option value="1 days">1d</option>
-                        <option value="7 days">7d</option>
-                    </select>
-                </div>
-                <div>
-                    <span>Aggregation:</span>
-                    <select id="aggregationSelect">
-                        <option value='none'>None</option>
-                        <option value="mean">Mean (avg)</option>
-                        <option value="median">Median</option>
-                        <option value="count">Count</option>
-                        <option value="sum">Sum</option>
-                        <option value="min">Min</option>
-                        <option value="max">Max</option>
-                    </select>
-                    <span>Aggregation Interval:</span>
-                    <select id="intervalSelect">
-                        <option value="1 minutes">1m</option>
-                        <option value="5 minutes">5m</option>
-                        <option value="15 minutes">15m</option>
-                        <option value="1 hour">1h</option>
-                        <option value="6 hour">6h</option>
-                        <option value="1 days">1d</option>
-                    </select>
+                    <div>
+                        <span>Time Range Start:</span>
+                        <select id="durationSelect">
+                            <option value="1 minutes">1m</option>
+                            <option value="5 minutes">5m</option>
+                            <option value="15 minutes">15m</option>
+                            <option value="1 hour">1h</option>
+                            <option value="6 hour">6h</option>
+                            <option value="1 days">1d</option>
+                            <option value="7 days">7d</option>
+                        </select>
+                    </div>
+                    <div>
+                        <span>Aggregation:</span>
+                        <select id="aggregationSelect">
+                            <option value='none'>None</option>
+                            <option value="mean">Mean (avg)</option>
+                            <option value="median">Median</option>
+                            <option value="count">Count</option>
+                            <option value="sum">Sum</option>
+                            <option value="min">Min</option>
+                            <option value="max">Max</option>
+                        </select>
+                        <div>
+                            <span>Aggregation Interval:</span>
+                            <select id="intervalSelect">
+                                <option value="1 minutes">1m</option>
+                                <option value="5 minutes">5m</option>
+                                <option value="15 minutes">15m</option>
+                                <option value="1 hour">1h</option>
+                                <option value="6 hour">6h</option>
+                                <option value="1 days">1d</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div id="graphDiv">
-            <canvas id="lineChart"></canvas>
-            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/date-fns"></script>
-            <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
-        </div>
-        <div id="tableDiv" style="display: none;">
-            <table id="myTable"></table>
         </div>
     </div>
 
