@@ -82,21 +82,26 @@
             if (currentQueryIndex > -1 && currentQueryIndex < history.length) {
                 const query = history[currentQueryIndex];
                 setDatabase(query.database);
-                editor.setValue(query.query);
+                console.log(query);
+                $('#languageSelect').val(query.language);
             }
         }
 
         function saveQueryHistory() {
             var query = editor.getValue();
             var database = currentDatabase;
+            var language = $('#languageSelect').val();
             var history = JSON.parse(localStorage.getItem('queryHistory')) || [];
-
+            console.log(query, database, language );
             if (history.length > 0) {
                 if (currentQueryIndex == -1) currentQueryIndex = 0;
                 if (history[currentQueryIndex].database != database ||
-                    history[currentQueryIndex].query != query) {
-                    history.unshift({ query, database });
+                    history[currentQueryIndex].query != query ||
+                    history[currentQueryIndex].language != language) {
+                    history.unshift({ query, database, language });
                 }
+            } else {
+                history.unshift({ query, database, language });
             }
             localStorage.setItem('queryHistory', JSON.stringify(history));
         }
@@ -120,16 +125,10 @@
 
                 <div id="toolbar">
                     <button id="runButton"><img src="static/images/play.png" alt="Run"></button>
-                    <button id="previousQueryButton">
-                        << </button>
-                            <button id="nextQueryButton">
-                                >>
-                            </button>
-                            <button id="clearHistoryButton">Clear History</button>
-                            <select id="visualizationSelect">
-                                <option value="graph">Graph</option>
-                                <option value="table">Table</option>
-                            </select>
+                    <select id="visualizationSelect">
+                        <option value="graph">Graph</option>
+                        <option value="table">Table</option>
+                    </select>
                 </div>
                 <div id="visualizationDiv">
                     <div id="graphDiv">
@@ -148,6 +147,7 @@
                     <span>Current Database:</span>
                     <span id="selectedDatabaseLabel">None Selected</span>
                 </div>
+                <div class="controlsHeader">Editing</div>
                 <div>
                     <span>Editing Mode:</span>
                     <select id="editModeSelect">
@@ -198,6 +198,15 @@
                             </select>
                         </div>
                     </div>
+                </div>
+                <div class="controlsHeader">History</div>
+                <div id="historyControls">
+                    <button id="previousQueryButton">
+                        << </button>
+                            <button id="nextQueryButton">
+                                >>
+                            </button>
+                            <div><button id="clearHistoryButton">Clear History</button></div>
                 </div>
             </div>
         </div>
