@@ -84,7 +84,6 @@
             if (currentQueryIndex > -1 && currentQueryIndex < history.length) {
                 const query = history[currentQueryIndex];
                 setDatabase(query.database);
-                console.log(query);
                 editor.setValue(query.query);
                 $('#languageSelect').val(query.language);
             }
@@ -95,7 +94,6 @@
             var database = currentDatabase;
             var language = $('#languageSelect').val();
             var history = JSON.parse(localStorage.getItem('queryHistory')) || [];
-            console.log(query, database, language);
             if (history.length > 0) {
                 if (currentQueryIndex == -1) currentQueryIndex = 0;
                 if (history[currentQueryIndex].database != database ||
