@@ -27,7 +27,7 @@
 
     <!-- App JS -->
     <script type="module">
-        import { initializeTreeview, currentDatabase, setDatabase } from "{{ url_for('static', filename='js/treeview.js') }}";
+        import { initializeTreeview, currentDatabase, setDatabase, addDatabase, reset} from "{{ url_for('static', filename='js/treeview.js') }}";
         import { buildQuery } from "{{ url_for('static', filename='js/queryBuilder.js') }}";
         import { runQuery, toggleView } from "{{ url_for('static', filename='js/queryRunner.js') }}";
 
@@ -36,6 +36,7 @@
             initializeTreeview();
             connectUIEvents();
             loadUIState();
+            loadExtraDatabases();
         };
 
         function connectUIEvents() {
@@ -76,8 +77,37 @@
                 saveUIState();
             });
             $('#visualizationSelect').change(function () { toggleView(); });
+            $('#addNode').on('click', function () {
+                var databaseName = $('#databaseName').val();
+                if (databaseName.length > 0) {
+                    addDatabase(databaseName);
+                    saveExtraDatabase(databaseName);
+                    $('#databaseName').val(''); // Clear the input field
+                } else {
+                    alert("Table name cannot be empty");
+                }
+            });
+            $('#resetTreeviewButton').on('click', function() {
+                localStorage.setItem('extraDatabases', JSON.stringify([]));
+                reset();
+            });
         }
 
+        function saveExtraDatabase(databaseName) {
+            let extraDBs = JSON.parse(localStorage.getItem('extraDatabases')) || [];
+            if (!extraDBs.includes(databaseName)) {
+                extraDBs.unshift(databaseName);
+            }
+            localStorage.setItem('extraDatabases', JSON.stringify(extraDBs));
+        }
+        function loadExtraDatabases() {
+            let extraDBs = JSON.parse(localStorage.getItem('extraDatabases')) || [];
+            if (extraDBs.length > 0) {
+                extraDBs.forEach(function (databaseName, index) {
+                    setTimeout(() => addDatabase(databaseName), index * 100);
+                });
+            }
+        }
         function loadQueryFromHistory() {
             let history = JSON.parse(localStorage.getItem('queryHistory')) || [];
 
@@ -147,6 +177,10 @@
 
     <div id="flexWrapper">
         <div id="treeviewWrapper">
+            <div><input type="text" id="databaseName" placeholder="Enter database name">
+                <button id="addNode">Add Database</button>
+                <button id="resetTreeviewButton">Reset</buton>
+            </div>
             <div id="treeview">
             </div>
         </div>
@@ -195,7 +229,7 @@
                     </div>
                 </div>
                 <div id="builderControlsDiv" class="builderSection">
-                <div class="controlsHeader">Builder Options</div>
+                    <div class="controlsHeader">Builder Options</div>
                     <div>
                         <span>Time Range Start:</span>
                         <select id="durationSelect">

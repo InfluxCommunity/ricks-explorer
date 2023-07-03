@@ -8,6 +8,20 @@ export function setDatabase(database) {
     $('#treeview').jstree('select_node', currentDatabase);
 }
 
+export function addDatabase(databaseName) {
+    $('#treeview').jstree().create_node('#',
+        {
+            'text': databaseName,
+            'type': "database",
+            'id': databaseName,
+            'icon': '/static/images/db.png'
+        }, 'first');
+}
+
+export function reset(){
+    $('#treeview').jstree().refresh();
+}
+
 export function initializeTreeview() {
     $('#treeview').jstree({
         'core': {
@@ -20,7 +34,7 @@ export function initializeTreeview() {
         if (node.a_attr && node.a_attr.class === 'disabled') {
             return false;
         }
-    
+
         handleSelectionChange();
         if (type == 'database' && node.children.length === 0) {
             populate_children('/api/get-tables/', node);
@@ -116,7 +130,7 @@ function populateTagKeys(node, objects) {
         'text': 'Tags',
         'type': 'tag_node',
         'table': objects['table'],
-        'icon': '/static/images/tags.png'  
+        'icon': '/static/images/tags.png'
     }, "last");
     objects['tags'].forEach(tag => {
         $('#treeview').jstree().create_node(tag_node, tag, "last");
