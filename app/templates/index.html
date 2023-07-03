@@ -131,9 +131,9 @@
                 }
             }
             if ($('#editModeSelect').val() == "manual") {
-                    editor.setReadOnly(false);
-                    $('#builderControlsDiv').hide();
-                } 
+                editor.setReadOnly(false);
+                $('#builderControlsDiv').hide();
+            }
         }
 
     </script>
@@ -179,8 +179,8 @@
                     <span>Current Database:</span>
                     <span id="selectedDatabaseLabel">None Selected</span>
                 </div>
-                <div class="controlsHeader">Editing</div>
-                <div>
+                <div class="builderSection">
+                    <div class="controlsHeader">Editing</div>
                     <span>Editing Mode:</span>
                     <select id="editModeSelect">
                         <option value="builder">Builder</option>
@@ -194,7 +194,8 @@
                         </select>
                     </div>
                 </div>
-                <div id="builderControlsDiv">
+                <div id="builderControlsDiv" class="builderSection">
+                <div class="controlsHeader">Builder Options</div>
                     <div>
                         <span>Time Range Start:</span>
                         <select id="durationSelect">
