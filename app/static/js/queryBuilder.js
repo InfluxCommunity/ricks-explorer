@@ -2,6 +2,9 @@ import { generateSQLQuery } from './sqlGenerator.js';
 import { generateInfluxQLQuery } from './influxqlGenerator.js';
 
 export function buildQuery() {
+    if ($('#editModeSelect').val() != "builder") {
+        return;
+    }
     const selectedNodes = getSelectedNodes();
 
     if (!selectedNodes.length) return false;
