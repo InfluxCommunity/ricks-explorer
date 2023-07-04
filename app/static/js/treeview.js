@@ -18,7 +18,7 @@ export function addDatabase(databaseName) {
         }, 'first');
 }
 
-export function reset(){
+export function reset() {
     $('#treeview').jstree().refresh();
 }
 
@@ -46,8 +46,8 @@ export function initializeTreeview() {
             populate_children(`api/get-tag-values/${node.original.database}/${node.original.table}/`,
                 node)
         }
-
         buildQuery();
+
     });
 
     function handleSelectionChange() {
@@ -88,8 +88,8 @@ export function initializeTreeview() {
                 populateFields(node, objects);
             }).then(data => $('#treeview').jstree('open_node', node))
             .catch(error => console.error('Error:', error));
-        
-            
+
+
     }
     function populate_children(end_point, node) {
         fetch(end_point + node.text)
