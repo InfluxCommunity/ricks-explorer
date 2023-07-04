@@ -23,7 +23,8 @@ logger.addHandler(handler)
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    app_title = os.environ.get("APP_TITLE", "Rick's Explorer")
+    return render_template('index.html', title=app_title)
 
 @app.route('/api/get-tag-values/<database>/<table>/<key>', methods=['GET'])
 def get_tag_values(database, table, key):
