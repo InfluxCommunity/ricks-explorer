@@ -89,6 +89,6 @@ FROM
     "${table}"
 WHERE
     ${whereClause}
-${groupClause};`
+${groupClause}`
 
 }
