@@ -30,7 +30,7 @@ def home():
 def get_tag_values(database, table, key):
     ticket_data = {
     "database": database,
-    "sql_query": f"""show tag values from "{table}" with key = "{key}" where time > now()""",
+    "sql_query": f"""show tag values from "{table}" with key = "{key}" where time > now() - 10m""",
     "query_type": "influxql"}
     df = punch_ticket(ticket_data)
  
