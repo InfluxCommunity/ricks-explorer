@@ -58,8 +58,7 @@ $ docker run -p 5002:5002 -e INFLUXDB_DATABASES="database1,database2" \
 ```
 
 ## Run from Docker Hub
-See the [Docker regist
-ry](https://hub.docker.com/repository/docker/rickspencer3/ricks-explorer/general)
+See the [Docker registry](https://hub.docker.com/repository/docker/rickspencer3/ricks-explorer/general)
 ```
 $ docker run -p 5002:5002 -e INFLUXDB_DATABASES="database1,database2" \
 -e INFLUXDB_HOST="xxxxx.a.influxdb.io" \
