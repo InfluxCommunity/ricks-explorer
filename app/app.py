@@ -28,9 +28,14 @@ def home():
 
 @app.route('/api/get-tag-values/<database>/<table>/<key>', methods=['GET'])
 def get_tag_values(database, table, key):
+    time_range_start = ""
+    if os.getenv('TAG_VALUE_RANGE_START') != None:
+        time_range_start = f"where time > now() - {os.getenv('TAG_VALUE_RANGE_START') }"
+    query = f"""show tag values from "{table}" with key = "{key}" {time_range_start}"""
+    print(query)
     ticket_data = {
     "database": database,
-    "sql_query": f"""show tag values from "{table}" with key = "{key}" where time > now() - 10m""",
+    "sql_query": query,
     "query_type": "influxql"}
     df = punch_ticket(ticket_data)
  
