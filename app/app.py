@@ -84,7 +84,6 @@ def get_columns(database, table):
     df = punch_ticket(ticket_data)
 
     data = df.to_dict(orient='records')
-    print(data)
     fields = [{'text':d['fieldKey'],
                 'type':'field',
                 'database':database,
@@ -174,6 +173,9 @@ def query():
     try:
         flight_reader = client.do_get(ticket, options)
         df = flight_reader.read_all().to_pandas()
+        #drop the iox::measurement column if using InfluxQL
+        if 'iox::measurement' in df.columns:
+            df = df.drop('iox::measurement', axis=1)
         if len(df) > 100000:
             return f"Query returns {len(df)} records, but the UI can only render up to 100,000. Consider using more aggregation or including a LIMIT.", 400
         json_str = df.to_json(orient='records')
