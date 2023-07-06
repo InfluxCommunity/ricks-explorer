@@ -63,5 +63,5 @@ See the [Docker registry](https://hub.docker.com/repository/docker/rickspencer3/
 $ docker run -p 5002:5002 -e INFLUXDB_DATABASES="database1,database2" \
 -e INFLUXDB_HOST="xxxxx.a.influxdb.io" \
 -e INFLUXDB_TOKEN="token_that_can_read_the_databases" \
--d rickspencer3ricks-explorer
+-d rickspencer3/ricks-explorer
 ```
