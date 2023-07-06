@@ -169,9 +169,12 @@ def query():
     try:
         flight_reader = client.do_get(ticket, options)
         df = flight_reader.read_all().to_pandas()
+        if len(df) > 100000:
+            return f"Query returns {len(df)} records, but the UI can only render up to 100,000. Consider using more aggregation or including a LIMIT.", 400
         json_str = df.to_json(orient='records')
         return json_str, 200
     except Exception as e:
         return str(e), 500
+    
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5002)
