@@ -24,7 +24,8 @@ logger.addHandler(handler)
 @app.route('/')
 def home():
     app_title = os.environ.get("APP_TITLE", "Rick's Explorer")
-    return render_template('index.html', title=app_title)
+    app_image = os.environ.get("APP_IMAGE", "static/images/influxdb.png")
+    return render_template('index.html', title=app_title, app_image=app_image)
 
 @app.route('/api/get-tag-values/<database>/<table>/<key>', methods=['GET'])
 def get_tag_values(database, table, key):
@@ -32,7 +33,7 @@ def get_tag_values(database, table, key):
     if os.getenv('TAG_VALUE_RANGE_START') != None:
         time_range_start = f"where time > now() - {os.getenv('TAG_VALUE_RANGE_START') }"
     query = f"""show tag values from "{table}" with key = "{key}" {time_range_start}"""
-    print(query)
+   
     ticket_data = {
     "database": database,
     "sql_query": query,
