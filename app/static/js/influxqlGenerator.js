@@ -47,11 +47,16 @@ function getTagWheres(tagValues) {
         }, {});
 
         tagWheres = Object.entries(tagsObj)
-            .map(([key, values]) => `"${key}" =~ /(${values.join("|")})/`)
-            .join("\nAND \n\t");
+        .map(([key, values]) => `"${key}" =~ /(${values.map(escapeRegex).join("|")})/`)
+        .join("\nAND \n\t");
     }
     return tagWheres;
 }
+
+function escapeRegex(string) {
+    return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+}
+
 
 function getTimeClause(tagWheres) {
     let timeClause = "";
