@@ -47,7 +47,7 @@ function getTagWheres(tagValues) {
         }, {});
 
         tagWheres = Object.entries(tagsObj)
-            .map(([key, values]) => `"${key}" =~ /${values.join("'|'")}/`)
+            .map(([key, values]) => `"${key}" =~ /(${values.join("|")})/`)
             .join("\nAND \n\t");
     }
     return tagWheres;
