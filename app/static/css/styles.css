@@ -96,6 +96,11 @@ body {
     margin-top: 10px;
     margin-bottom: 10px;
 }
+#tableDiv {
+    width: 750px;
+    height: 600px;
+    overflow: auto;
+}
 
 #visualizationDiv {
     margin: 10px;
