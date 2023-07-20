@@ -11,6 +11,7 @@ host = os.getenv('INFLUXDB_HOST')
 token = os.getenv('INFLUXDB_TOKEN')
 options = FlightCallOptions(headers=[(b"authorization",f"Bearer {token}".encode('utf-8'))])
 client = FlightClient(f"grpc+tls://{host}:443")
+max_rows = int(os.getenv("MAX_ROWS",100000))
 
 logger = logging.getLogger('ricks-explorer')
 handler = logging.StreamHandler(sys.stdout)
@@ -177,8 +178,8 @@ def query():
         #drop the iox::measurement column if using InfluxQL
         if 'iox::measurement' in df.columns:
             df = df.drop('iox::measurement', axis=1)
-        if len(df) > 100000:
-            return f"Query returns {len(df)} records, but the UI can only render up to 100,000. Consider using more aggregation or including a LIMIT.", 400
+        if len(df) > max_rows:
+            return f"Query returns {len(df)} records, but the UI can only render up to {max_rows}. Consider using more aggregation or including a LIMIT.", 400
         json_str = df.to_json(orient='records')
         return json_str, 200
     except Exception as e:
