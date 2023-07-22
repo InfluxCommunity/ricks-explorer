@@ -21,12 +21,10 @@ export function runQuery() {
 }
 
 function showProgress() {
-    console.log('show progress');
     $('#progressImg').show();
 }
 
 function hideProgress() {
-    console.log('hide progress');
     $('#progressImg').hide();
 }
 
