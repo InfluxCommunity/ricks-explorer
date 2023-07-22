@@ -33,6 +33,7 @@ python3 app.py
 ## Optional envars
  * APP_TITLE: Sets the text at the top of the page and the browser tab title
  * TAG_VALUE_RANGE_START: When expanding the treeview, this determines how far back in time to check for data for the tag values. If you are writing a lot of data, retrieving tag values can take a long time because by default InfluxDB may scan a lot of rows. Alternatively, if you are writing a small amount of data and haven't written in a long time, the app might not find any tag values. Send in a time value that InfluxQL understands, for example "10m".
+ * MAX_ROWS: Sets the maximum number of rows that the server will return to the UI. Defaults to 100,000.
 
  Here is an example of running the python server with the optional envars:
 ```
