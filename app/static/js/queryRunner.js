@@ -49,7 +49,15 @@ export function toggleView() {
 function handleResponse(response) {
     hideProgress();
     data = JSON.parse(response);
+
     $('#errorDiv').hide();
+    $('#noResultsDiv').hide();
+    if(data.length == 0){
+        $('#noResultsDiv').show();
+        $('#graphDiv').hide();
+        $('#tableDiv').hide();
+        return;
+    }
     if ($('#visualizationSelect').val() == "graph") {
         $('#graphDiv').show();
         $('#tableDiv').hide();

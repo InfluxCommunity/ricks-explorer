@@ -66,6 +66,14 @@ body {
     text-align: center;
     color: red;
 }
+
+#noResultsDiv {
+    display: none;
+    width: 600px;
+    padding: 20px;
+    text-align: center;
+}
+
 #progressImg {
     display: none;
     width: 30px;
