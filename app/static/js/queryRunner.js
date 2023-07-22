@@ -64,6 +64,7 @@ function handleResponse(response) {
 }
 
 function handleError(error) {
+    hideProgress();
     console.log(error);
     $('#graphDiv').hide();
     $('#tableDiv').hide();
