@@ -178,6 +178,7 @@ def query():
         #drop the iox::measurement column if using InfluxQL
         if 'iox::measurement' in df.columns:
             df = df.drop('iox::measurement', axis=1)
+        
         if len(df) > max_rows:
             return f"Query returns {len(df)} records, but the UI can only render up to {max_rows}. Consider using more aggregation or including a LIMIT.", 400
         json_str = df.to_json(orient='records')

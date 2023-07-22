@@ -3,12 +3,13 @@ import { renderGraph } from './graphRenderer.js';
 import {renderTable} from './tableRenderer.js';
 
 let data = [];
+let currentView = "";
 
 export function runQuery() {
     const query = editor.getValue();
     const language = document.getElementById('languageSelect').value;
     const requestData = JSON.stringify({ query, language, database: currentDatabase });
-
+    showProgress();
     $.ajax({
         url: '/api/query',
         type: 'POST',
@@ -17,6 +18,16 @@ export function runQuery() {
         success: handleResponse,
         error: handleError
     });
+}
+
+function showProgress() {
+    console.log('show progress');
+    $('#progressImg').show();
+}
+
+function hideProgress() {
+    console.log('hide progress');
+    $('#progressImg').hide();
 }
 
 export function toggleView() {
@@ -38,6 +49,7 @@ export function toggleView() {
 }
 
 function handleResponse(response) {
+    hideProgress();
     data = JSON.parse(response);
     $('#errorDiv').hide();
     if ($('#visualizationSelect').val() == "graph") {
